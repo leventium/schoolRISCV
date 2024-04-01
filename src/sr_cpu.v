@@ -37,6 +37,8 @@ module sr_cpu
     wire [31:0] immI;
     wire [31:0] immB;
     wire [31:0] immU;
+	 wire [31:0] immS;
+	 wire [31:0] immJ;
 
     //program counter
     wire [31:0] pc;
@@ -60,7 +62,9 @@ module sr_cpu
         .cmdF7      ( cmdF7        ),
         .immI       ( immI         ),
         .immB       ( immB         ),
-        .immU       ( immU         ) 
+        .immU       ( immU         ),
+		  .immS       ( immS         ),
+		  .immJ       ( immJ         )
     );
 
     //register file
@@ -125,7 +129,9 @@ module sr_decode
     output     [ 6:0] cmdF7,
     output reg [31:0] immI,
     output reg [31:0] immB,
-    output reg [31:0] immU 
+    output reg [31:0] immU,
+	 output reg [31:0] immS,
+	 output reg [31:0] immJ
 );
     assign cmdOp = instr[ 6: 0];
     assign rd    = instr[11: 7];
@@ -153,6 +159,22 @@ module sr_decode
     always @ (*) begin
         immU[11: 0] = 12'b0;
         immU[31:12] = instr[31:12];
+    end
+	 
+	 // S-immediate
+	 always @ (*) begin
+        immS[4:  0] = instr[11:7];
+        immS[10: 5] = instr[30:25];
+		  immS[31:11] = { 21 {instr[31]} };
+    end
+	 
+	 // J-immediate
+	 always @ (*) begin
+	     immJ[    0] = 1'b0;
+        immJ[10: 1] = instr[30:21];
+		  immJ[   11] = instr[20];
+        immJ[19:12] = instr[19:12];
+		  immJ[31:20] = { 12 {instr[31]} };
     end
 
 endmodule
