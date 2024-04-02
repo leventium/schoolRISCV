@@ -80,10 +80,7 @@
 `define RVF7_SLL    7'b0000000
 `define RVF7_SRA    7'b0100000
 `define RVF7_SLT    7'b0100000
-
-// imm[5:11]
-`define imm_SLLI    7'b0000000
-`define imm_SRLI    7'b0000000
-`define imm_SRAI    7'b0100000
-`define imm_ANY     7'b???????
+`define RVF7_SLLI   7'b0000000
+`define RVF7_SRLI   7'b0000000
+`define RVF7_SRAI   7'b0100000
 
