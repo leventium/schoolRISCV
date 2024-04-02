@@ -250,7 +250,7 @@ module sr_alu
             `ALU_SRL  : result = srcA >> srcB [4:0];
             `ALU_SLTU : result = (srcA < srcB) ? 1 : 0;
             `ALU_SUB  : result = srcA - srcB;
-				`ALU_XOR  : result = srcA ˆ srcB;
+				`ALU_XOR  : result = srcA ^ srcB;
 				`ALU_AND  : result = srcA & srcB;
 				`ALU_SLL  : result = srcA << srcB [4:0];
 				`ALU_SRA  : result = srcA >>> srcB [4:0];
