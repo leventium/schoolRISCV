@@ -17,7 +17,17 @@ module sr_cpu
     input   [ 4:0]  regAddr,    // debug access reg address
     output  [31:0]  regData,    // debug access reg data
     output  [31:0]  imAddr,     // instruction memory address
-    input   [31:0]  imData      // instruction memory data
+    input   [31:0]  imData,     // instruction memory data
+
+    // Data Memory
+    output  [31:0]  dmAddr,
+    output  [31:0]  dmDataW,
+    output          dmWe,
+    output          w_byte,
+    output          w_half,
+    output          w_word,
+    output          sign,
+    input   [31:0]  dmDataR,
 );
     //control wires
     wire        aluZero;
@@ -25,7 +35,12 @@ module sr_cpu
     wire        regWrite;
     wire        aluSrc;
     wire        wdSrc;
+    wire        immPick;
+    wire        memToReg;
     wire  [2:0] aluControl;
+    wire  [3:0] dmRMode;
+
+    assign { w_byte, w_half, w_word } = dmRMode;
 
     //instruction decode wires
     wire [ 6:0] cmdOp;
@@ -35,6 +50,7 @@ module sr_cpu
     wire [ 4:0] rs2;
     wire [ 6:0] cmdF7;
     wire [31:0] immI;
+    wire [31:0] immS;
     wire [31:0] immB;
     wire [31:0] immU;
 
@@ -60,7 +76,8 @@ module sr_cpu
         .cmdF7      ( cmdF7        ),
         .immI       ( immI         ),
         .immB       ( immB         ),
-        .immU       ( immU         ) 
+        .immU       ( immU         ),
+        .immS       ( immS         )
     );
 
     //register file
@@ -86,7 +103,9 @@ module sr_cpu
     assign regData = (regAddr != 0) ? rd0 : pc;
 
     //alu
-    wire [31:0] srcB = aluSrc ? immI : rd2;
+    wire [31:0] immediate = immPick ? immI : immS;
+    wire [31:0] srcB = aluSrc ? immediate : rd2;
+    wire [31:0] execResult;
     wire [31:0] aluResult;
 
     sr_alu alu (
@@ -97,20 +116,29 @@ module sr_cpu
         .result     ( aluResult    ) 
     );
 
-    assign wd3 = wdSrc ? immU : aluResult;
+    assign execResult = memToReg ? dmDataR : aluResult;
+    assign wd3 = wdSrc ? immU : execResult;
 
     //control
     sr_control sm_control (
-        .cmdOp      ( cmdOp        ),
-        .cmdF3      ( cmdF3        ),
-        .cmdF7      ( cmdF7        ),
-        .aluZero    ( aluZero      ),
-        .pcSrc      ( pcSrc        ),
-        .regWrite   ( regWrite     ),
-        .aluSrc     ( aluSrc       ),
-        .wdSrc      ( wdSrc        ),
-        .aluControl ( aluControl   ) 
+        .cmdOp      ( cmdOp      ),
+        .cmdF3      ( cmdF3      ),
+        .cmdF7      ( cmdF7      ),
+        .aluZero    ( aluZero    ),
+        .pcSrc      ( pcSrc      ),
+        .regWrite   ( regWrite   ),
+        .aluSrc     ( aluSrc     ),
+        .wdSrc      ( wdSrc      ),
+        .aluControl ( aluControl ),
+        .immPick    ( immPick    ),
+        .memToReg   ( memToReg   ),
+        .dmWe       ( dmWe       ),
+        .dmRMode    ( dmRMode    )
     );
+
+    // memory
+    assign dmAddr = aluResult;
+    assign dmDataW = rd2;
 
 endmodule
 
@@ -125,7 +153,8 @@ module sr_decode
     output     [ 6:0] cmdF7,
     output reg [31:0] immI,
     output reg [31:0] immB,
-    output reg [31:0] immU 
+    output reg [31:0] immU,
+    output reg [31:0] immS
 );
     assign cmdOp = instr[ 6: 0];
     assign rd    = instr[11: 7];
@@ -155,6 +184,13 @@ module sr_decode
         immU[31:12] = instr[31:12];
     end
 
+    // S-immediate
+    always @(*) begin
+        immS[ 4: 0] = instr[11: 7];
+        immS[10: 5] = instr[30:25];
+        immS[31:11] = { 21 { instr[31] } };
+    end
+
 endmodule
 
 module sr_control
@@ -167,7 +203,11 @@ module sr_control
     output reg       regWrite, 
     output reg       aluSrc,
     output reg       wdSrc,
-    output reg [2:0] aluControl
+    output reg       immPick,    // TODO
+    output reg       memToReg,   // TODO
+    output reg       dmWe,       // TODO
+    output reg [2:0] aluControl,
+    output reg [2:0] dmRMode     // TODO
 );
     reg          branch;
     reg          condZero;
