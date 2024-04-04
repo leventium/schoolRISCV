@@ -1,4 +1,5 @@
 project/
+board/
 run/
 sim/
 *.bak

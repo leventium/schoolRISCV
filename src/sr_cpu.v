@@ -37,7 +37,7 @@ module sr_cpu
     wire        wdSrc;
     wire        immPick;
     wire        memToReg;
-    wire  [2:0] aluControl;
+    wire  [3:0] aluControl;
     wire  [3:0] dmRMode;
 
     assign { w_byte, w_half, w_word } = dmRMode;
@@ -50,9 +50,10 @@ module sr_cpu
     wire [ 4:0] rs2;
     wire [ 6:0] cmdF7;
     wire [31:0] immI;
-    wire [31:0] immS;
     wire [31:0] immB;
     wire [31:0] immU;
+    wire [31:0] immS;
+    wire [31:0] immJ;
 
     //program counter
     wire [31:0] pc;
@@ -77,7 +78,8 @@ module sr_cpu
         .immI       ( immI         ),
         .immB       ( immB         ),
         .immU       ( immU         ),
-        .immS       ( immS         )
+        .immS       ( immS         ),
+        .immJ       ( immJ         )
     );
 
     //register file
@@ -154,7 +156,8 @@ module sr_decode
     output reg [31:0] immI,
     output reg [31:0] immB,
     output reg [31:0] immU,
-    output reg [31:0] immS
+    output reg [31:0] immS,
+    output reg [31:0] immJ
 );
     assign cmdOp = instr[ 6: 0];
     assign rd    = instr[11: 7];
@@ -191,6 +194,15 @@ module sr_decode
         immS[31:11] = { 21 { instr[31] } };
     end
 
+    // J-immediate
+    always @ (*) begin
+        immJ[    0] = 1'b0;
+        immJ[10: 1] = instr[30:21];
+        immJ[   11] = instr[20];
+        immJ[19:12] = instr[19:12];
+        immJ[31:20] = { 12 {instr[31]} };
+    end
+
 endmodule
 
 module sr_control
@@ -206,7 +218,7 @@ module sr_control
     output reg       immPick,    // TODO
     output reg       memToReg,   // TODO
     output reg       dmWe,       // TODO
-    output reg [2:0] aluControl,
+    output reg [3:0] aluControl,
     output reg [2:0] dmRMode     // TODO
 );
     reg          branch;
@@ -221,18 +233,33 @@ module sr_control
         wdSrc       = 1'b0;
         aluControl  = `ALU_ADD;
 
-        casez( {cmdF7, cmdF3, cmdOp} )
-            { `RVF7_ADD,  `RVF3_ADD,  `RVOP_ADD  } : begin regWrite = 1'b1; aluControl = `ALU_ADD;  end
-            { `RVF7_OR,   `RVF3_OR,   `RVOP_OR   } : begin regWrite = 1'b1; aluControl = `ALU_OR;   end
-            { `RVF7_SRL,  `RVF3_SRL,  `RVOP_SRL  } : begin regWrite = 1'b1; aluControl = `ALU_SRL;  end
-            { `RVF7_SLTU, `RVF3_SLTU, `RVOP_SLTU } : begin regWrite = 1'b1; aluControl = `ALU_SLTU; end
-            { `RVF7_SUB,  `RVF3_SUB,  `RVOP_SUB  } : begin regWrite = 1'b1; aluControl = `ALU_SUB;  end
+        casez( {cmdF7, cmdF3, cmdOp } )
+            { `RVF7_ADD,  `RVF3_ADD,  `RVOP_ADD   } : begin regWrite = 1'b1; aluControl = `ALU_ADD;  end
+            { `RVF7_OR,   `RVF3_OR,   `RVOP_OR    } : begin regWrite = 1'b1; aluControl = `ALU_OR;   end
+            { `RVF7_SRL,  `RVF3_SRL,  `RVOP_SRL   } : begin regWrite = 1'b1; aluControl = `ALU_SRL;  end
+            { `RVF7_SLTU, `RVF3_SLTU, `RVOP_SLTU  } : begin regWrite = 1'b1; aluControl = `ALU_SLTU; end
+            { `RVF7_SUB,  `RVF3_SUB,  `RVOP_SUB   } : begin regWrite = 1'b1; aluControl = `ALU_SUB;  end
+            { `RVF7_XOR,  `RVF3_XOR,  `RVOP_XOR   } : begin regWrite = 1'b1; aluControl = `ALU_XOR;  end
+            { `RVF7_AND,  `RVF3_AND,  `RVOP_AND   } : begin regWrite = 1'b1; aluControl = `ALU_AND;  end
+            { `RVF7_SLL,  `RVF3_SLL,  `RVOP_SLL   } : begin regWrite = 1'b1; aluControl = `ALU_SLL;  end
+            { `RVF7_SRA,  `RVF3_SRA,  `RVOP_SRA   } : begin regWrite = 1'b1; aluControl = `ALU_SRA;  end
+            { `RVF7_SLT,  `RVF3_SLT,  `RVOP_SLT   } : begin regWrite = 1'b1; aluControl = `ALU_SLT;  end
 
-            { `RVF7_ANY,  `RVF3_ADDI, `RVOP_ADDI } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_ADD; end
-            { `RVF7_ANY,  `RVF3_ANY,  `RVOP_LUI  } : begin regWrite = 1'b1; wdSrc  = 1'b1; end
+            { `RVF7_ANY,  `RVF3_ADDI, `RVOP_ADDI  } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_ADD; end
+            { `RVF7_ANY,  `RVF3_XORI, `RVOP_XORI  } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_XOR; end
+            { `RVF7_ANY,  `RVF3_ORI,  `RVOP_ORI   } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_OR;  end
+            { `RVF7_ANY,  `RVF3_ANDI, `RVOP_ANDI  } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_AND; end
+            { `RVF7_ANY,  `RVF3_SLLI, `RVOP_SLLI  } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_SLL; end
+            { `RVF7_SLLI, `RVF3_SLLI, `RVOP_SLLI  } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_SLL; end
+            { `RVF7_SRLI, `RVF3_SRLI, `RVOP_SRLI  } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_SRL; end
+            { `RVF7_SRAI, `RVF3_SRAI, `RVOP_SRAI  } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_SRA; end
+            { `RVF7_ANY,  `RVF3_SLTI, `RVOP_SLTI  } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_SLT; end
+            { `RVF7_ANY,  `RVF3_SLTIU,`RVOP_SLTIU } : begin regWrite = 1'b1; aluSrc = 1'b1; aluControl = `ALU_SLTU;end
+                
+            { `RVF7_ANY,  `RVF3_ANY,  `RVOP_LUI   } : begin regWrite = 1'b1; wdSrc  = 1'b1; end
 
-            { `RVF7_ANY,  `RVF3_BEQ,  `RVOP_BEQ  } : begin branch = 1'b1; condZero = 1'b1; aluControl = `ALU_SUB; end
-            { `RVF7_ANY,  `RVF3_BNE,  `RVOP_BNE  } : begin branch = 1'b1; aluControl = `ALU_SUB; end
+            { `RVF7_ANY,  `RVF3_BEQ,  `RVOP_BEQ   } : begin branch = 1'b1; condZero = 1'b1; aluControl = `ALU_SUB; end
+            { `RVF7_ANY,  `RVF3_BNE,  `RVOP_BNE   } : begin branch = 1'b1; aluControl = `ALU_SUB; end
         endcase
     end
 endmodule
@@ -241,7 +268,7 @@ module sr_alu
 (
     input  [31:0] srcA,
     input  [31:0] srcB,
-    input  [ 2:0] oper,
+    input  [ 3:0] oper,
     output        zero,
     output reg [31:0] result
 );
@@ -250,9 +277,14 @@ module sr_alu
             default   : result = srcA + srcB;
             `ALU_ADD  : result = srcA + srcB;
             `ALU_OR   : result = srcA | srcB;
-            `ALU_SRL  : result = srcA >> srcB [4:0];
+            `ALU_SRL  : result = srcA >> srcB[4:0];
             `ALU_SLTU : result = (srcA < srcB) ? 1 : 0;
             `ALU_SUB  : result = srcA - srcB;
+            `ALU_XOR  : result = srcA ^ srcB;
+            `ALU_AND  : result = srcA & srcB;
+            `ALU_SLL  : result = srcA << srcB[4:0];
+            `ALU_SRA  : result = srcA >>> srcB[4:0];
+            `ALU_SLT  : result = ($signed(srcA) < $signed(srcB)) ? 1 : 0;
         endcase
     end
 
