@@ -23,10 +23,10 @@ module sr_cpu
     output  [31:0]  dmAddr,
     output  [31:0]  dmDataW,
     output          dmWe,
-    output          w_byte,
-    output          w_half,
-    output          w_word,
-    output          sign,
+    output          op_byte,
+    output          op_half,
+    output          op_word,
+    output          dmSign,
     input   [31:0]  dmDataR,
 );
     //control wires
@@ -40,7 +40,7 @@ module sr_cpu
     wire  [3:0] aluControl;
     wire  [3:0] dmRMode;
 
-    assign { w_byte, w_half, w_word } = dmRMode;
+    assign { op_byte, op_half, op_word } = dmRMode;
 
     //instruction decode wires
     wire [ 6:0] cmdOp;
@@ -105,7 +105,7 @@ module sr_cpu
     assign regData = (regAddr != 0) ? rd0 : pc;
 
     //alu
-    wire [31:0] immediate = immPick ? immI : immS;
+    wire [31:0] immediate = immPick ? immS : immI;
     wire [31:0] srcB = aluSrc ? immediate : rd2;
     wire [31:0] execResult;
     wire [31:0] aluResult;
@@ -135,6 +135,7 @@ module sr_cpu
         .immPick    ( immPick    ),
         .memToReg   ( memToReg   ),
         .dmWe       ( dmWe       ),
+        .dmSign     ( dmSign     ),
         .dmRMode    ( dmRMode    )
     );
 

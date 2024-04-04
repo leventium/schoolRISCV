@@ -95,4 +95,3 @@
 `define RVF7_SLLI   7'b0000000
 `define RVF7_SRLI   7'b0000000
 `define RVF7_SRAI   7'b0100000
-
