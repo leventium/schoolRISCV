@@ -38,9 +38,6 @@ module sr_cpu
     wire        immPick;
     wire        memToReg;
     wire  [3:0] aluControl;
-    wire  [3:0] dmRMode;
-
-    assign { op_byte, op_half, op_word } = dmRMode;
 
     //instruction decode wires
     wire [ 6:0] cmdOp;
@@ -136,7 +133,9 @@ module sr_cpu
         .memToReg   ( memToReg   ),
         .dmWe       ( dmWe       ),
         .dmSign     ( dmSign     ),
-        .dmRMode    ( dmRMode    )
+        .dmOpByte   ( op_byte    ),
+        .dmOpHalf   ( op_half    ),
+        .dmOpWord   ( op_word    ),
     );
 
     // memory

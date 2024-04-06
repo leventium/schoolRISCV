@@ -1,3 +1,8 @@
+`define DM_BYTE     1'b001
+`define DM_HALF     1'b010
+`define DM_WORD     1'b100
+
+
 module sr_control
 (
     input     [ 6:0] cmdOp,
@@ -8,16 +13,20 @@ module sr_control
     output reg       regWrite,  // rf write enable
     output reg       aluSrc,    // immediate : rd2
     output reg       wdSrc,     // immU : execResult
-    output reg       immPick,   // immS : immI              // TODO
-    output reg       memToReg,  // dmDataR : aluResult      // TODO
-    output reg       dmWe,      // data memory write enable // TODO
-    output reg       dmSign,    // data memory signed read  // TODO
+    output reg       immPick,   // immS : immI                  // TODO
+    output reg       memToReg,  // dmDataR : aluResult          // TODO
+    output reg       dmWe,      // data memory write enable     // TODO
+    output reg       dmSign,    // data memory signed read      // TODO
     output reg [3:0] aluControl,
-    output reg [2:0] dmRMode    // data memory read mode {byte, half, word} // TODO
-                                // should be reworked
+    output           dmOpByte,   // data memory operation mode   // TODO
+    output           dmOpHalf,
+    output           dmOpWord
 );
     reg          branch;
     reg          condZero;
+    reg    [2:0] dmOpMode;
+
+    assign {dmOpWord, dmOpHalf, dmOpByte} = dmOpMode;
     assign pcSrc = branch & (aluZero == condZero);
 
     always @ (*) begin
@@ -30,10 +39,10 @@ module sr_control
         memToReg    = 1'b0;
         dmWe        = 1'b0;
         dmSign      = 1'b0;
-        dmRMode     = 3'b001;
         aluControl  = `ALU_ADD;
+        dmOpMode    = `DM_WORD;
 
-        casez( {cmdF7, cmdF3, cmdOp } )
+        casez( { cmdF7, cmdF3, cmdOp } )
             { `RVF7_ADD,  `RVF3_ADD,  `RVOP_ADD   } : begin
                 regWrite = 1'b1;
                 aluControl = `ALU_ADD;
