@@ -1,3 +1,5 @@
+`include "sr_cpu.vh"
+
 `define DM_BYTE     1'b001
 `define DM_HALF     1'b010
 `define DM_WORD     1'b100
@@ -43,6 +45,7 @@ module sr_control
         dmOpMode    = `DM_WORD;
 
         casez( { cmdF7, cmdF3, cmdOp } )
+            default: aluControl = `ALU_ADD;
             { `RVF7_ADD,  `RVF3_ADD,  `RVOP_ADD   } : begin
                 regWrite = 1'b1;
                 aluControl = `ALU_ADD;
@@ -151,6 +154,66 @@ module sr_control
             { `RVF7_ANY,  `RVF3_BNE,  `RVOP_BNE   } : begin
                 branch = 1'b1;
                 aluControl = `ALU_SUB;
+            end
+
+
+            // load / store instructions
+            { `RVF7_ANY,  `RVF3_LB,   `RVOP_LOAD  } : begin
+                memToReg = 1'b1;
+                regWrite = 1'b1;
+                immPick = 1'b1;
+                aluSrc = 1'b1;
+                dmOpMode = `DM_BYTE;
+                dmSign = 1'b1;
+            end
+            { `RVF7_ANY,  `RVF3_LH,   `RVOP_LOAD  } : begin
+                memToReg = 1'b1;
+                regWrite = 1'b1;
+                immPick = 1'b1;
+                aluSrc = 1'b1;
+                dmOpMode = `DM_HALF;
+                dmSign = 1'b1;
+            end
+            { `RVF7_ANY,  `RVF3_LW,   `RVOP_LOAD  } : begin
+                memToReg = 1'b1;
+                regWrite = 1'b1;
+                immPick = 1'b1;
+                aluSrc = 1'b1;
+                dmOpMode = `DM_WORD;
+                dmSign = 1'b1;
+            end
+            { `RVF7_ANY,  `RVF3_LBU,  `RVOP_LOAD  } : begin
+                memToReg = 1'b1;
+                regWrite = 1'b1;
+                immPick = 1'b1;
+                aluSrc = 1'b1;
+                dmOpMode = `DM_BYTE;
+            end
+            { `RVF7_ANY,  `RVF3_LHU,  `RVOP_LOAD  } : begin
+                memToReg = 1'b1;
+                regWrite = 1'b1;
+                immPick = 1'b1;
+                aluSrc = 1'b1;
+                dmOpMode = `DM_HALF;
+            end
+
+            { `RVF7_ANY,  `RVF3_SB,   `RVOP_STORE } : begin
+                dmWe = 1'b1;
+                immPick = 1'b1;
+                aluSrc = 1'b1;
+                dmOpMode = `DM_BYTE;
+            end
+            { `RVF7_ANY,  `RVF3_SH,   `RVOP_STORE } : begin
+                dmWe = 1'b1;
+                immPick = 1'b1;
+                aluSrc = 1'b1;
+                dmOpMode = `DM_HALF;
+            end
+            { `RVF7_ANY,  `RVF3_SW,   `RVOP_STORE } : begin
+                dmWe = 1'b1;
+                immPick = 1'b1;
+                aluSrc = 1'b1;
+                dmOpMode = `DM_WORD;
             end
         endcase
     end
