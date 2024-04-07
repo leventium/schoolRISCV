@@ -39,6 +39,28 @@ module sm_top
         .clkOut     ( clk       )
     );
 
+    // data memory
+    wire [31:0] data_addr;
+    wire [31:0] write_data;
+    wire [31:0] read_data;
+    wire        we;
+    wire        sign;
+    wire        op_byte;
+    wire        op_half;
+    wire        op_word;
+
+    sr_ram ram (
+        .clk         ( clk        ),
+        .data_addr   ( data_addr  ),
+        .write_addr  ( write_data ),
+        .we          ( we         ),
+        .sign        ( sign       ),
+        .op_byte     ( op_byte    ),
+        .op_half     ( op_half    ),
+        .op_word     ( op_word    ),
+        .read_data   ( read_data  )
+    );
+
     //instruction memory
     wire    [31:0]  imAddr;
     wire    [31:0]  imData;
@@ -46,12 +68,21 @@ module sm_top
 
     sr_cpu sm_cpu
     (
-        .clk        ( clk       ),
-        .rst_n      ( rst_n     ),
-        .regAddr    ( addr      ),
-        .regData    ( regData   ),
-        .imAddr     ( imAddr    ),
-        .imData     ( imData    )
+        .clk        ( clk        ),
+        .rst_n      ( rst_n      ),
+        .regAddr    ( addr       ),
+        .regData    ( regData    ),
+        .imAddr     ( imAddr     ),
+        .imData     ( imData     ),
+
+        .dmAddr     ( data_addr  ),
+        .dmDataW    ( write_data ),
+        .dmWe       ( we         ),
+        .op_byte    ( op_byte    ),
+        .op_half    ( op_half    ),
+        .op_word    ( op_word    ),
+        .dmSign     ( sign       ),
+        .dmDataR    ( read_data  ),
     );
 
 endmodule
