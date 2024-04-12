@@ -15,12 +15,12 @@ module sr_control
     output reg       regWrite,  // rf write enable
     output reg       aluSrc,    // immediate : rd2
     output reg       wdSrc,     // immU : execResult
-    output reg       immPick,   // immS : immI                  // TODO
-    output reg       memToReg,  // dmDataR : aluResult          // TODO
-    output reg       dmWe,      // data memory write enable     // TODO
-    output reg       dmSign,    // data memory signed read      // TODO
+    output reg       immPick,   // immS : immI
+    output reg       memToReg,  // dmDataR : aluResult
+    output reg       dmWe,      // data memory write enable
+    output reg       dmSign,    // data memory signed read
     output reg [3:0] aluControl,
-    output           dmOpByte,   // data memory operation mode   // TODO
+    output           dmOpByte,   // data memory operation mode
     output           dmOpHalf,
     output           dmOpWord
 );
@@ -161,7 +161,6 @@ module sr_control
             { `RVF7_ANY,  `RVF3_LB,   `RVOP_LOAD  } : begin
                 memToReg = 1'b1;
                 regWrite = 1'b1;
-                immPick = 1'b1;
                 aluSrc = 1'b1;
                 dmOpMode = `DM_BYTE;
                 dmSign = 1'b1;
@@ -169,7 +168,6 @@ module sr_control
             { `RVF7_ANY,  `RVF3_LH,   `RVOP_LOAD  } : begin
                 memToReg = 1'b1;
                 regWrite = 1'b1;
-                immPick = 1'b1;
                 aluSrc = 1'b1;
                 dmOpMode = `DM_HALF;
                 dmSign = 1'b1;
@@ -177,7 +175,6 @@ module sr_control
             { `RVF7_ANY,  `RVF3_LW,   `RVOP_LOAD  } : begin
                 memToReg = 1'b1;
                 regWrite = 1'b1;
-                immPick = 1'b1;
                 aluSrc = 1'b1;
                 dmOpMode = `DM_WORD;
                 dmSign = 1'b1;
@@ -185,14 +182,12 @@ module sr_control
             { `RVF7_ANY,  `RVF3_LBU,  `RVOP_LOAD  } : begin
                 memToReg = 1'b1;
                 regWrite = 1'b1;
-                immPick = 1'b1;
                 aluSrc = 1'b1;
                 dmOpMode = `DM_BYTE;
             end
             { `RVF7_ANY,  `RVF3_LHU,  `RVOP_LOAD  } : begin
                 memToReg = 1'b1;
                 regWrite = 1'b1;
-                immPick = 1'b1;
                 aluSrc = 1'b1;
                 dmOpMode = `DM_HALF;
             end
