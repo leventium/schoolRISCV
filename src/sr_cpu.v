@@ -31,12 +31,17 @@ module sr_cpu
 );
     //control wires
     wire        aluZero;
-    wire        pcSrc;
+    // wire        pcSrc;
     wire        regWrite;
     wire        aluSrc;
-    wire        wdSrc;
-    wire        immPick;
-    wire        memToReg;
+    // wire        wdSrc;
+    // wire        immPick;
+    // wire        memToReg;
+    wire        src1Pick;
+    wire  [1:0] src2Pick;
+    wire  [1:0] wd3Pick;
+    wire  [1:0] pcOp1;
+    wire        pcOp2;
     wire  [3:0] aluControl;
 
     //instruction decode wires
@@ -52,18 +57,26 @@ module sr_cpu
     wire [31:0] immS;
     wire [31:0] immJ;
 
-    //program counter
+    // Program Counter
     wire [31:0] pc;
     wire [31:0] pcBranch = pc + immB;
     wire [31:0] pcPlus4  = pc + 4;
     wire [31:0] pcNext   = pcSrc ? pcBranch : pcPlus4;
-    sm_register r_pc(clk ,rst_n, pcNext, pc);
+
+
+    reg         pcSrc1;
+    wire        pcSrc2   = // TODO
+    wire [31:0] pcNext   = // TODO
+
+
+    sm_register r_pc(clk, rst_n, pcNext, pc);
+
 
     //program memory access
     assign imAddr = pc >> 2;
     wire [31:0] instr = imData;
 
-    //instruction decode
+    // Instruction Decode
     sr_decode id (
         .instr      ( instr        ),
         .cmdOp      ( cmdOp        ),
@@ -102,9 +115,9 @@ module sr_cpu
     assign regData = (regAddr != 0) ? rd0 : pc;
 
     //alu
-    wire [31:0] immediate = immPick ? immS : immI;
-    wire [31:0] srcB = aluSrc ? immediate : rd2;
-    wire [31:0] execResult;
+    // wire [31:0] immediate = immPick ? immS : immI;  // TODO src2 Pick
+    // wire [31:0] srcB = aluSrc ? immediate : rd2;
+    // wire [31:0] execResult;
     wire [31:0] aluResult;
 
     sr_alu alu (
@@ -115,8 +128,8 @@ module sr_cpu
         .result     ( aluResult    ) 
     );
 
-    assign execResult = memToReg ? dmDataR : aluResult;
-    assign wd3 = wdSrc ? immU : execResult;
+    // assign execResult = memToReg ? dmDataR : aluResult; // TODO wd Pick
+    // assign wd3 = wdSrc ? immU : execResult;
 
     //control
     sr_control sr_control (
@@ -141,67 +154,6 @@ module sr_cpu
     // memory
     assign dmAddr = aluResult;
     assign dmDataW = rd2;
-
-endmodule
-
-module sr_decode
-(
-    input      [31:0] instr,
-    output     [ 6:0] cmdOp,
-    output     [ 4:0] rd,
-    output     [ 2:0] cmdF3,
-    output     [ 4:0] rs1,
-    output     [ 4:0] rs2,
-    output     [ 6:0] cmdF7,
-    output reg [31:0] immI,
-    output reg [31:0] immB,
-    output reg [31:0] immU,
-    output reg [31:0] immS,
-    output reg [31:0] immJ
-);
-    assign cmdOp = instr[ 6: 0];
-    assign rd    = instr[11: 7];
-    assign cmdF3 = instr[14:12];
-    assign rs1   = instr[19:15];
-    assign rs2   = instr[24:20];
-    assign cmdF7 = instr[31:25];
-
-    // I-immediate
-    always @ (*) begin
-        immI[10: 0] = instr[30:20];
-        immI[31:11] = { 21 {instr[31]} };
-    end
-
-    // B-immediate
-    always @ (*) begin
-        immB[    0] = 1'b0;
-        immB[ 4: 1] = instr[11:8];
-        immB[10: 5] = instr[30:25];
-        immB[   11] = instr[7];
-        immB[31:12] = { 20 {instr[31]} };
-    end
-
-    // U-immediate
-    always @ (*) begin
-        immU[11: 0] = 12'b0;
-        immU[31:12] = instr[31:12];
-    end
-
-    // S-immediate
-    always @(*) begin
-        immS[ 4: 0] = instr[11: 7];
-        immS[10: 5] = instr[30:25];
-        immS[31:11] = { 21 { instr[31] } };
-    end
-
-    // J-immediate
-    always @ (*) begin
-        immJ[    0] = 1'b0;
-        immJ[10: 1] = instr[30:21];
-        immJ[   11] = instr[20];
-        immJ[19:12] = instr[19:12];
-        immJ[31:20] = { 12 {instr[31]} };
-    end
 
 endmodule
 

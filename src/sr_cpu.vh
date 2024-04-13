@@ -98,3 +98,30 @@
 `define RVF7_SLLI   7'b0000000
 `define RVF7_SRLI   7'b0000000
 `define RVF7_SRAI   7'b0100000
+
+
+// WD3 src
+`define WD3_SRC_ALU     2'b00;
+`define WD3_SRC_MEM     2'b01;
+`define WD3_SRC_IMMU    2'b10;
+`define WD3_SRC_PC4     2'b11;
+
+
+// PC src1
+`define PC_SRC1_4       2'b00;
+`define PC_SRC1_IMMB    2'b01;
+`define PC_SRC1_IMMJ    2'b10;
+`define PC_SRC1_IMMI    2'b11;
+// PC src2
+`define PC_SRC2_PC      1'b0;
+`define PC_SRC2_RD1     1'b1;
+
+
+// ALU src1 Pick
+`define ALU_SRC1_RD1    1'b0;
+`define ALU_SRC1_PC     1'b1;
+// ALU src2 Pick
+`define ALU_SRC2_RD2    2'b00;
+`define ALU_SRC2_IMMI   2'b01;
+`define ALU_SRC2_IMMS   2'b10;
+`define ALU_SRC2_IMMU   2'b11;
