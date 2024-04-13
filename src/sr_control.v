@@ -60,7 +60,7 @@ module sr_control
             end
             { `RVF7_SLTU, `RVF3_SLTU, `RVOP_SLTU  } : begin
                 regWrite = 1'b1;
-                aluControl = `ALU_SLTU;
+                aluControl = `ALU_LTU;
             end
             { `RVF7_SUB,  `RVF3_SUB,  `RVOP_SUB   } : begin
                 regWrite = 1'b1;
@@ -84,7 +84,7 @@ module sr_control
             end
             { `RVF7_SLT,  `RVF3_SLT,  `RVOP_SLT   } : begin
                 regWrite = 1'b1;
-                aluControl = `ALU_SLT;
+                aluControl = `ALU_LT;
             end
 
 
@@ -131,12 +131,12 @@ module sr_control
             { `RVF7_ANY,  `RVF3_SLTI, `RVOP_SLTI  } : begin
                 regWrite = 1'b1;
                 aluSrc = 1'b1;
-                aluControl = `ALU_SLT;
+                aluControl = `ALU_LT;
             end
             { `RVF7_ANY,  `RVF3_SLTIU,`RVOP_SLTIU } : begin
                 regWrite = 1'b1;
                 aluSrc = 1'b1;
-                aluControl = `ALU_SLTU;
+                aluControl = `ALU_LTU;
             end
 
 
@@ -146,14 +146,32 @@ module sr_control
             end
 
 
-            { `RVF7_ANY,  `RVF3_BEQ,  `RVOP_BEQ   } : begin
+            { `RVF7_ANY,  `RVF3_BEQ,  `RVOP_BNCH  } : begin
                 branch = 1'b1;
                 condZero = 1'b1;
                 aluControl = `ALU_SUB;
             end
-            { `RVF7_ANY,  `RVF3_BNE,  `RVOP_BNE   } : begin
+            { `RVF7_ANY,  `RVF3_BNE,  `RVOP_BNCH  } : begin
                 branch = 1'b1;
                 aluControl = `ALU_SUB;
+            end
+            { `RVF7_ANY,  `RVF3_BLT,  `RVOP_BNCH  } : begin
+                branch = 1'b1;
+                aluControl = `ALU_LT;
+            end
+            { `RVF7_ANY,  `RVF3_BGE,  `RVOP_BNCH  } : begin
+                branch = 1'b1;
+                condZero = 1'b1;
+                aluControl = `ALU_LT;
+            end
+            { `RVF7_ANY,  `RVF3_BLTU, `RVOP_BNCH  } : begin
+                branch = 1'b1;
+                aluControl = `ALU_LTU;
+            end
+            { `RVF7_ANY,  `RVF3_BGEU, `RVOP_BNCH  } : begin
+                branch = 1'b1;
+                condZero = 1'b1;
+                aluControl = `ALU_LTU;
             end
 
 

@@ -219,13 +219,13 @@ module sr_alu
             `ALU_ADD  : result = srcA + srcB;
             `ALU_OR   : result = srcA | srcB;
             `ALU_SRL  : result = srcA >> srcB[4:0];
-            `ALU_SLTU : result = (srcA < srcB) ? 1 : 0;
+            `ALU_LTU  : result = (srcA < srcB) ? 1 : 0;
             `ALU_SUB  : result = srcA - srcB;
             `ALU_XOR  : result = srcA ^ srcB;
             `ALU_AND  : result = srcA & srcB;
             `ALU_SLL  : result = srcA << srcB[4:0];
             `ALU_SRA  : result = srcA >>> srcB[4:0];
-            `ALU_SLT  : result = ($signed(srcA) < $signed(srcB)) ? 1 : 0;
+            `ALU_LT   : result = ($signed(srcA) < $signed(srcB)) ? 1 : 0;
         endcase
     end
 
