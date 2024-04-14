@@ -1,8 +1,8 @@
 `include "sr_cpu.vh"
 
-`define DM_BYTE     1'b001
-`define DM_HALF     1'b010
-`define DM_WORD     1'b100
+`define DM_BYTE     3'b001
+`define DM_HALF     3'b010
+`define DM_WORD     3'b100
 
 
 module sr_control
@@ -249,12 +249,12 @@ module sr_control
 
             // jump instructions
             { `RVF7_ANY,  `RVF3_ANY,  `RVOP_JAL  } : begin
-                wdSrc       = `WD3_SRC_PC4;
+                wdSrc       = `WD_SRC_PC4;
                 regWrite    = 1'b1;
                 pcSrc1      = `PC_SRC1_IMMJ;
             end
             { `RVF7_ANY,  `RVF3_JALR, `RVOP_JALR } : begin
-                wdSrc       = `WD3_SRC_PC4;
+                wdSrc       = `WD_SRC_PC4;
                 regWrite    = 1'b1;
                 pcSrc1      = `PC_SRC1_IMMI;
                 pcSrc2      = `PC_SRC2_RD1;

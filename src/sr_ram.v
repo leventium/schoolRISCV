@@ -28,7 +28,7 @@ module sr_ram #(
                     mem[data_addr+2] = write_data[23:16];
                     mem[data_addr+3] = write_data[31:24];
                 end
-                default: read_data = '0;
+                default: read_data = 32'b0;
             endcase
         end
     end
@@ -56,7 +56,7 @@ module sr_ram #(
                     mem[data_addr]
                 };
             end
-            default: read_data = 0;
+            default: read_data = 32'b0;
         endcase
     end
 

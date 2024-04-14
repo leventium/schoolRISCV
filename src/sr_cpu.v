@@ -27,7 +27,7 @@ module sr_cpu
     output          op_half,
     output          op_word,
     output          dmSign,
-    input   [31:0]  dmDataR,
+    input   [31:0]  dmDataR
 );
     //control wires
     wire        aluZero;
@@ -72,11 +72,11 @@ module sr_cpu
 
     always @(*) begin
         case ( pcSrc1 )
-            `PC_SRC1_4      : pcSrc1In  = 4;
+            `PC_SRC1_4      : pcSrc1In  = 32'h00000004;
             `PC_SRC1_IMMB   : pcSrc1In  = immB;
             `PC_SRC1_IMMJ   : pcSrc1In  = immJ;
             `PC_SRC1_IMMI   : pcSrc1In  = immI;
-            default         : pcSrc1In  = 4;
+            default         : pcSrc1In  = 32'h00000004;
         endcase
     end
 
@@ -113,10 +113,10 @@ module sr_cpu
 
     always @(*) begin
         case (wdSrc)
-            `WD3_SRC_ALU  : wd3 = aluResult;
-            `WD3_SRC_MEM  : wd3 = dmDataR;
-            `WD3_SRC_IMMU : wd3 = immU;
-            `WD3_SRC_PC4  : wd3 = pcPlus4;
+            `WD_SRC_ALU   : wd3 = aluResult;
+            `WD_SRC_MEM   : wd3 = dmDataR;
+            `WD_SRC_IMMU  : wd3 = immU;
+            `WD_SRC_PC4   : wd3 = pcPlus4;
             default       : wd3 = aluResult;
         endcase
     end
@@ -194,7 +194,7 @@ module sr_cpu
         .dmSign     ( dmSign     ),
         .dmOpByte   ( op_byte    ),
         .dmOpHalf   ( op_half    ),
-        .dmOpWord   ( op_word    ),
+        .dmOpWord   ( op_word    )
     );
 
 

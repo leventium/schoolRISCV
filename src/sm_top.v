@@ -52,7 +52,7 @@ module sm_top
     sr_ram ram (
         .clk         ( clk        ),
         .data_addr   ( data_addr  ),
-        .write_addr  ( write_data ),
+        .write_data  ( write_data ),
         .we          ( we         ),
         .sign        ( sign       ),
         .op_byte     ( op_byte    ),
@@ -66,8 +66,7 @@ module sm_top
     wire    [31:0]  imData;
     sm_rom reset_rom(imAddr, imData);
 
-    sr_cpu sm_cpu
-    (
+    sr_cpu sm_cpu (
         .clk        ( clk        ),
         .rst_n      ( rst_n      ),
         .regAddr    ( addr       ),
@@ -82,7 +81,7 @@ module sm_top
         .op_half    ( op_half    ),
         .op_word    ( op_word    ),
         .dmSign     ( sign       ),
-        .dmDataR    ( read_data  ),
+        .dmDataR    ( read_data  )
     );
 
 endmodule
