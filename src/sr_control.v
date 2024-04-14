@@ -156,12 +156,6 @@ module sr_control
             end
 
 
-            { `RVF7_ANY,  `RVF3_ANY,  `RVOP_LUI   } : begin
-                regWrite = 1'b1;
-                wdSrc = `WD_SRC_IMMU;
-            end
-
-
             { `RVF7_ANY,  `RVF3_BEQ,  `RVOP_BNCH  } : begin
                 pcSrc1 = { 1'b0, branch };
                 condZero = 1'b1;
@@ -231,6 +225,7 @@ module sr_control
                 dmOpMode = `DM_HALF;
             end
 
+
             // store instructions
             { `RVF7_ANY,  `RVF3_SB,   `RVOP_STORE } : begin
                 aluSrc2     = `ALU_SRC2_IMMS;
@@ -249,6 +244,34 @@ module sr_control
                 dmWe        = 1'b1;
 
                 dmOpMode    = `DM_WORD;
+            end
+
+
+            // jump instructions
+            { `RVF7_ANY,  `RVF3_ANY,  `RVOP_JAL  } : begin
+                wdSrc       = `WD3_SRC_PC4;
+                regWrite    = 1'b1;
+                pcSrc1      = `PC_SRC1_IMMJ;
+            end
+            { `RVF7_ANY,  `RVF3_JALR, `RVOP_JALR } : begin
+                wdSrc       = `WD3_SRC_PC4;
+                regWrite    = 1'b1;
+                pcSrc1      = `PC_SRC1_IMMI;
+                pcSrc2      = `PC_SRC2_RD1;
+            end
+
+
+            // lui
+            { `RVF7_ANY,  `RVF3_ANY,  `RVOP_LUI   } : begin
+                regWrite = 1'b1;
+                wdSrc = `WD_SRC_IMMU;
+            end
+            // auipc
+            { `RVF7_ANY,  `RVF3_ANY, `RVOP_AUIPC } : begin
+                aluSrc1     = `ALU_SRC1_PC;
+                aluSrc2     = `ALU_SRC2_IMMU;
+                regWrite    = 1'b1;
+                aluControl  = `ALU_ADD;
             end
         endcase
     end

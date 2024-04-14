@@ -37,12 +37,17 @@ module sr_cpu
     // wire        wdSrc;
     // wire        immPick;
     // wire        memToReg;
-    wire        src1Pick;
-    wire  [1:0] src2Pick;
-    wire  [1:0] wd3Pick;
-    wire  [1:0] pcOp1;
-    wire        pcOp2;
-    wire  [3:0] aluControl;
+    // wire        src1Pick;
+    // wire  [1:0] src2Pick;
+    // wire  [1:0] wd3Pick;
+    // wire  [1:0] pcOp1;
+    // wire        pcOp2;
+    wire [ 1:0] pcSrc1;
+    wire        pcSrc2;
+    wire        aluSrc1;
+    wire [ 1:0] aluSrc2;
+    wire [ 1:0] wdSrc;
+    wire [ 3:0] aluControl;
 
     //instruction decode wires
     wire [ 6:0] cmdOp;
@@ -59,15 +64,21 @@ module sr_cpu
 
     // Program Counter
     wire [31:0] pc;
-    wire [31:0] pcBranch = pc + immB;
-    wire [31:0] pcPlus4  = pc + 4;
-    wire [31:0] pcNext   = pcSrc ? pcBranch : pcPlus4;
+    wire [31:0] pcPlus4     = pc + 4;
 
+    reg  [31:0] pcSrc1In;
+    wire [31:0] pcSrc2In    = pcSrc2 ? rd1 : pc;
+    wire [31:0] pcNext      = pcSrc1In + pcSrc2In;
 
-    reg         pcSrc1;
-    wire        pcSrc2   = // TODO
-    wire [31:0] pcNext   = // TODO
-
+    always @(*) begin
+        case ( pcSrc1 )
+            `PC_SRC1_4      : pcSrc1In  = 4;
+            `PC_SRC1_IMMB   : pcSrc1In  = immB;
+            `PC_SRC1_IMMJ   : pcSrc1In  = immJ;
+            `PC_SRC1_IMMI   : pcSrc1In  = immI;
+            default         : pcSrc1In  = 4;
+        endcase
+    end
 
     sm_register r_pc(clk, rst_n, pcNext, pc);
 
@@ -75,6 +86,7 @@ module sr_cpu
     //program memory access
     assign imAddr = pc >> 2;
     wire [31:0] instr = imData;
+
 
     // Instruction Decode
     sr_decode id (
@@ -92,11 +104,22 @@ module sr_cpu
         .immJ       ( immJ         )
     );
 
+
     //register file
     wire [31:0] rd0;
     wire [31:0] rd1;
     wire [31:0] rd2;
-    wire [31:0] wd3;
+    reg  [31:0] wd3;
+
+    always @(*) begin
+        case (wdSrc)
+            `WD3_SRC_ALU  : wd3 = aluResult;
+            `WD3_SRC_MEM  : wd3 = dmDataR;
+            `WD3_SRC_IMMU : wd3 = immU;
+            `WD3_SRC_PC4  : wd3 = pcPlus4;
+            default       : wd3 = aluResult;
+        endcase
+    end
 
     sm_register_file rf (
         .clk        ( clk          ),
@@ -111,18 +134,32 @@ module sr_cpu
         .we3        ( regWrite     )
     );
 
+
     //debug register access
     assign regData = (regAddr != 0) ? rd0 : pc;
 
-    //alu
+
+    // ALU
     // wire [31:0] immediate = immPick ? immS : immI;  // TODO src2 Pick
     // wire [31:0] srcB = aluSrc ? immediate : rd2;
     // wire [31:0] execResult;
+    wire [31:0] aluSrc1In = aluSrc1 ? pc : rd1;
+    reg  [31:0] aluSrc2In;
     wire [31:0] aluResult;
 
+    always @ (*) begin
+        case (aluSrc2)
+            `ALU_SRC2_RD2   : aluSrc2In = rd2;
+            `ALU_SRC2_IMMI  : aluSrc2In = immI;
+            `ALU_SRC2_IMMS  : aluSrc2In = immS;
+            `ALU_SRC2_IMMU  : aluSrc2In = immU;
+            default         : aluSrc2In = rd2;
+        endcase
+    end
+
     sr_alu alu (
-        .srcA       ( rd1          ),
-        .srcB       ( srcB         ),
+        .srcA       ( aluSrc1In    ),
+        .srcB       ( aluSrc2In    ),
         .oper       ( aluControl   ),
         .zero       ( aluZero      ),
         .result     ( aluResult    ) 
@@ -131,19 +168,28 @@ module sr_cpu
     // assign execResult = memToReg ? dmDataR : aluResult; // TODO wd Pick
     // assign wd3 = wdSrc ? immU : execResult;
 
-    //control
+
+    // control unit
     sr_control sr_control (
         .cmdOp      ( cmdOp      ),
         .cmdF3      ( cmdF3      ),
         .cmdF7      ( cmdF7      ),
+
         .aluZero    ( aluZero    ),
-        .pcSrc      ( pcSrc      ),
         .regWrite   ( regWrite   ),
-        .aluSrc     ( aluSrc     ),
-        .wdSrc      ( wdSrc      ),
+    
+        // .pcSrc      ( pcSrc      ),
+        // .aluSrc     ( aluSrc     ),
+        // .immPick    ( immPick    ),
+        // .memToReg   ( memToReg   ),
+
         .aluControl ( aluControl ),
-        .immPick    ( immPick    ),
-        .memToReg   ( memToReg   ),
+        .aluSrc1    ( aluSrc1    ),
+        .aluSrc2    ( aluSrc2    ),
+        .pcSrc1     ( pcSrc1     ),
+        .pcSrc2     ( pcSrc2     ),
+        .wdSrc      ( wdSrc      ),
+
         .dmWe       ( dmWe       ),
         .dmSign     ( dmSign     ),
         .dmOpByte   ( op_byte    ),
@@ -151,7 +197,8 @@ module sr_cpu
         .dmOpWord   ( op_word    ),
     );
 
-    // memory
+
+    // Memory
     assign dmAddr = aluResult;
     assign dmDataW = rd2;
 
@@ -159,10 +206,10 @@ endmodule
 
 module sr_alu
 (
-    input  [31:0] srcA,
-    input  [31:0] srcB,
-    input  [ 3:0] oper,
-    output        zero,
+    input      [31:0] srcA,
+    input      [31:0] srcB,
+    input      [ 3:0] oper,
+    output            zero,
     output reg [31:0] result
 );
     always @ (*) begin

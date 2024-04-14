@@ -44,6 +44,9 @@
 `define RVOP_SLTIU  7'b0010011
 `define RVOP_LOAD   7'b0000011
 `define RVOP_STORE  7'b0100011
+`define RVOP_JAL    7'b1101111
+`define RVOP_JALR   7'b1100111
+`define RVOP_AUIPC  7'b0010111
 
 // instruction funct3
 `define RVF3_ADDI   3'b000
@@ -72,6 +75,7 @@
 `define RVF3_SRAI   3'b101
 `define RVF3_SLTI   3'b010
 `define RVF3_SLTIU  3'b011
+`define RVF3_JALR   3'b000
 
 // funct3 Load/Store
 `define RVF3_LB     3'b000
