@@ -1,0 +1,3 @@
+[submodule "submodules/riscv-crypto"]
+	path = submodules/riscv-crypto
+	url = https://github.com/riscv/riscv-crypto.git
