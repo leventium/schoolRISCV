@@ -4,16 +4,14 @@
 
 module tb_crypto;
 
-task log(input [31:0] rs1, rs2, rs3);
-    $write("rs1 - 0x%h  |  rs2 - 0x%h  |  rd - 0x%h\n", rs1, rs2, rs3);
-endtask
-
 integer cycle;
 
 reg clk, reset;
 reg [20:0] mode;
-reg [31:0] rs1, rs2, rd;
-reg i_valid, o_valid;
+reg [31:0] rs1, rs2;
+wire [31:0] rd;
+reg i_valid;
+wire o_valid;
 reg [3:0] imm;
 
 riscv_crypto_fu_rv32 dut (
@@ -55,6 +53,7 @@ initial begin
     clk = 1'b0;
     reset = 1'b0;
     cycle = 0;
+    i_valid = 1'b0;
 end
 
 initial forever #30 clk = ~clk;
@@ -62,18 +61,23 @@ initial forever #30 clk = ~clk;
 always @(posedge clk) begin
     if (cycle >= `MAX_CYCLES) $finish();
 
-    if (cycles == 1) begin
+    if (cycle == 3) begin
         reset = 1'b1;
-        mode = 21'h000008;
+        mode = 21'h001000;
         imm = 2'b00;
-        rs1 = 32'h00001000;
-        rs2 = 32'h00000111;
+        rs1 = 32'h000010ab;
+        rs2 = 32'h000001cd;
         i_valid = 1'b1;
+    end else if (cycle == 4) begin
+        rs1 = 32'h00002124;
+        rs2 = 32'h00000435;
     end else begin
+        rs1 = 32'h000aabcd;
+        rs2 = 32'h000004cc;
         i_valid = 1'b0;
     end
 
-    log(rs1, rs2, rs3);
+    $write("rs1 - 0x%h  |  rs2 - 0x%h  |  i_val - %b  |  o_val - %b  |  rd - 0x%h\n", rs1, rs2, i_valid, o_valid, rd);
     cycle = cycle + 1;
 end
 
