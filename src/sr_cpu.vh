@@ -105,10 +105,11 @@
 
 
 // WD src
-`define WD_SRC_ALU      2'b00
-`define WD_SRC_MEM      2'b01
-`define WD_SRC_IMMU     2'b10
-`define WD_SRC_PC4      2'b11
+`define WD_SRC_ALU      3'b000
+`define WD_SRC_MEM      3'b001
+`define WD_SRC_IMMU     3'b010
+`define WD_SRC_PC4      3'b011
+`define WD_SRC_CRYPT    3'b100
 
 
 // PC src1

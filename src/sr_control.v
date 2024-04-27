@@ -25,14 +25,18 @@ module sr_control
     output reg [3:0] aluControl,
     output reg [1:0] pcSrc1,
     output reg       pcSrc2,
-    output reg [1:0] wdSrc,
+    output reg [2:0] wdSrc,
 
     // memory
     output reg       dmWe,      // data memory write enable
     output reg       dmSign,    // data memory signed read
     output           dmOpByte,   // data memory operation mode
     output           dmOpHalf,
-    output           dmOpWord
+    output           dmOpWord,
+
+    // crypto module
+    // output reg        cry_i_valid,
+    output reg [20:0] cryptoMode
 );
     wire         branch;
     reg          condZero;

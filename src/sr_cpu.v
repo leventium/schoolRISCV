@@ -46,7 +46,7 @@ module sr_cpu
     wire        pcSrc2;
     wire        aluSrc1;
     wire [ 1:0] aluSrc2;
-    wire [ 1:0] wdSrc;
+    wire [ 2:0] wdSrc;
     wire [ 3:0] aluControl;
 
     //instruction decode wires
@@ -61,6 +61,9 @@ module sr_cpu
     wire [31:0] immU;
     wire [31:0] immS;
     wire [31:0] immJ;
+
+    // crypto module
+    wire [31:0] cryResult;
 
     // Program Counter
     wire [31:0] pc;
@@ -117,6 +120,7 @@ module sr_cpu
             `WD_SRC_MEM   : wd3 = dmDataR;
             `WD_SRC_IMMU  : wd3 = immU;
             `WD_SRC_PC4   : wd3 = pcPlus4;
+            `WD_SRC_CRYPT : wd3 = cryResult;
             default       : wd3 = aluResult;
         endcase
     end
@@ -169,6 +173,46 @@ module sr_cpu
     // assign wd3 = wdSrc ? immU : execResult;
 
 
+    // crypto
+
+    // wire cry_i_valid;
+    wire [20:0] cry_mode;
+
+    riscv_crypto_fu_rv32 crypto_module (
+        .g_clk             ( clk          ),
+        .g_resetn          ( rst_n        ),
+
+        .valid             ( 1'b1         ),
+        .rs1               ( rd1          ),
+        .rs2               ( rd2          ),
+        .imm               ( instr[31:30] ), // TODO: modify decoder
+
+        .op_lut4lo         ( cry_mode[ 0] ),
+        .op_lut4hi         ( cry_mode[ 1] ),
+        .op_lut4           ( cry_mode[ 2] ),
+        .op_saes32_encs    ( cry_mode[ 3] ),
+        .op_saes32_encsm   ( cry_mode[ 4] ),
+        .op_saes32_decs    ( cry_mode[ 5] ),
+        .op_saes32_decsm   ( cry_mode[ 6] ),
+        .op_ssha256_sig0   ( cry_mode[ 7] ),
+        .op_ssha256_sig1   ( cry_mode[ 8] ),
+        .op_ssha256_sum0   ( cry_mode[ 9] ),
+        .op_ssha256_sum1   ( cry_mode[10] ),
+        .op_ssha512_sum0r  ( cry_mode[11] ),
+        .op_ssha512_sum1r  ( cry_mode[12] ),
+        .op_ssha512_sig0l  ( cry_mode[13] ),
+        .op_ssha512_sig0h  ( cry_mode[14] ),
+        .op_ssha512_sig1l  ( cry_mode[15] ),
+        .op_ssha512_sig1h  ( cry_mode[16] ),
+        .op_ssm3_p0        ( cry_mode[17] ),
+        .op_ssm3_p1        ( cry_mode[18] ),
+        .op_ssm4_ks        ( cry_mode[19] ),
+        .op_ssm4_ed        ( cry_mode[20] ),
+
+        .rd                ( cryResult    )
+    );
+
+
     // control unit
     sr_control sr_control (
         .cmdOp      ( cmdOp      ),
@@ -194,7 +238,10 @@ module sr_cpu
         .dmSign     ( dmSign     ),
         .dmOpByte   ( op_byte    ),
         .dmOpHalf   ( op_half    ),
-        .dmOpWord   ( op_word    )
+        .dmOpWord   ( op_word    ),
+
+        .cryptoMode ( cry_mode   )
+        // .cry_i_valid( cry_i_valid)
     );
 
 
