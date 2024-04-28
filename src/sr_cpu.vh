@@ -48,6 +48,11 @@
 `define RVOP_JALR   7'b1100111
 `define RVOP_AUIPC  7'b0010111
 
+// opcode crypto
+`define RVOP_AES    7'b0110011
+`define RVOP_SHA256 7'b0010011
+`define RVOP_SHA512 7'b0110011
+
 // instruction funct3
 `define RVF3_ADDI   3'b000
 `define RVF3_BEQ    3'b000
@@ -77,6 +82,11 @@
 `define RVF3_SLTIU  3'b011
 `define RVF3_JALR   3'b000
 
+// funct3 crypto
+`define RVF3_AES    3'b000
+`define RVF3_SHA256 3'b001
+`define RVF3_SHA512 3'b000
+
 // funct3 Load/Store
 `define RVF3_LB     3'b000
 `define RVF3_LH     3'b001
@@ -88,21 +98,40 @@
 `define RVF3_SW     3'b010
 
 // instruction funct7
-`define RVF7_ADD    7'b0000000
-`define RVF7_OR     7'b0000000
-`define RVF7_SRL    7'b0000000
-`define RVF7_SLTU   7'b0000000
-`define RVF7_SUB    7'b0100000
-`define RVF7_ANY    7'b???????
-`define RVF7_XOR    7'b0000000
-`define RVF7_AND    7'b0000000
-`define RVF7_SLL    7'b0000000
-`define RVF7_SRA    7'b0100000
-`define RVF7_SLT    7'b0000000
-`define RVF7_SLLI   7'b0000000
-`define RVF7_SRLI   7'b0000000
-`define RVF7_SRAI   7'b0100000
+`define RVF7_ADD          7'b0000000
+`define RVF7_OR           7'b0000000
+`define RVF7_SRL          7'b0000000
+`define RVF7_SLTU         7'b0000000
+`define RVF7_SUB          7'b0100000
+`define RVF7_ANY          7'b???????
+`define RVF7_XOR          7'b0000000
+`define RVF7_AND          7'b0000000
+`define RVF7_SLL          7'b0000000
+`define RVF7_SRA          7'b0100000
+`define RVF7_SLT          7'b0000000
+`define RVF7_SLLI         7'b0000000
+`define RVF7_SRLI         7'b0000000
+`define RVF7_SRAI         7'b0100000
 
+// funct7 crypto
+`define RVF7_AES32DSI     7'b??10101
+`define RVF7_AES32DSMI    7'b??10111
+`define RVF7_AES32ESI     7'b??10001
+`define RVF7_AES32ESMI    7'b??10011
+`define RVF7_SHA256       7'b0001000
+`define RVF7_SHA512SIG0H  7'b0101110
+`define RVF7_SHA512SIG0L  7'b0101010
+`define RVF7_SHA512SIG1H  7'b0101111
+`define RVF7_SHA512SIG1L  7'b0101011
+`define RVF7_SHA512SUM0R  7'b0101000
+`define RVF7_SHA512SUM1R  7'b0101001
+
+// crypto sha256 funct5
+`define RVF5_SHA256SIG0   5'b00010
+`define RVF5_SHA256SIG1   5'b00011
+`define RVF5_SHA256SUM0   5'b00000
+`define RVF5_SHA256SUM1   5'b00001
+`define RVF5_ANY          5'b?????
 
 // WD src
 `define WD_SRC_ALU      3'b000
