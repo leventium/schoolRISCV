@@ -7,32 +7,34 @@
 
 module sr_control
 (
-    input     [ 6:0] cmdOp,
-    input     [ 2:0] cmdF3,
-    input     [ 6:0] cmdF7,
-    input            aluZero,
+    input      [ 6:0] cmdOp,
+    input      [ 2:0] cmdF3,
+    input      [ 6:0] cmdF7,
+    input      [ 4:0] cmdF5_rs2,
+    input             aluZero,
 
+    output reg        hold,
     // output           pcSrc,     // pcBranch : pcPlus4
-    output reg       regWrite,  // rf write enable
+    output reg        regWrite,  // rf write enable
     // output reg       aluSrc,    // immediate : rd2
     // output reg       wdSrc,     // immU : execResult
     // output reg       immPick,   // immS : immI
     // output reg       memToReg,  // dmDataR : aluResult
 
     // multiplexers
-    output reg       aluSrc1,
-    output reg [1:0] aluSrc2,
-    output reg [3:0] aluControl,
-    output reg [1:0] pcSrc1,
-    output reg       pcSrc2,
-    output reg [2:0] wdSrc,
+    output reg        aluSrc1,
+    output reg  [1:0] aluSrc2,
+    output reg  [3:0] aluControl,
+    output reg  [1:0] pcSrc1,
+    output reg        pcSrc2,
+    output reg  [2:0] wdSrc,
 
     // memory
-    output reg       dmWe,      // data memory write enable
-    output reg       dmSign,    // data memory signed read
-    output           dmOpByte,   // data memory operation mode
-    output           dmOpHalf,
-    output           dmOpWord,
+    output reg        dmWe,      // data memory write enable
+    output reg        dmSign,    // data memory signed read
+    output            dmOpByte,   // data memory operation mode
+    output            dmOpHalf,
+    output            dmOpWord,
 
     // crypto module
     // output reg        cry_i_valid,
@@ -65,7 +67,6 @@ module sr_control
         dmOpMode    = `DM_WORD;
 
         casez( { cmdF7, cmdF3, cmdOp } )
-            default: aluControl = `ALU_ADD;
             { `RVF7_ADD,  `RVF3_ADD,  `RVOP_ADD   } : begin
                 regWrite = 1'b1;
                 aluControl = `ALU_ADD;
@@ -128,11 +129,12 @@ module sr_control
                 aluSrc2 = `ALU_SRC2_IMMI;
                 aluControl = `ALU_AND;
             end
-            { `RVF7_ANY,  `RVF3_SLLI, `RVOP_SLLI  } : begin
-                regWrite = 1'b1;
-                aluSrc2 = `ALU_SRC2_IMMI;
-                aluControl = `ALU_SLL;
-            end
+            // TODO: check necessity of this block
+            // { `RVF7_ANY,  `RVF3_SLLI, `RVOP_SLLI  } : begin
+            //     regWrite = 1'b1;
+            //     aluSrc2 = `ALU_SRC2_IMMI;
+            //     aluControl = `ALU_SLL;
+            // end
             { `RVF7_SLLI, `RVF3_SLLI, `RVOP_SLLI  } : begin
                 regWrite = 1'b1;
                 aluSrc2 = `ALU_SRC2_IMMI;
@@ -277,6 +279,93 @@ module sr_control
                 regWrite    = 1'b1;
                 aluControl  = `ALU_ADD;
             end
+
+
+            default: aluControl = `ALU_ADD;
         endcase
     end
+endmodule
+
+
+module crypto_detector (
+    input [6:0] opcode,
+    input [2:0] func3,
+    input [6:0] func7,
+    input [4:0] func5_rs2,
+
+    output reg  res
+);
+
+    always @* begin
+        casez ({ func5_rs2, func7, func3, opcode })
+            { `RVF5_ANY,         `RVF7_AES32DSI,     `RVF3_AES,     `RVOP_AES    },
+            { `RVF5_ANY,         `RVF7_AES32DSMI,    `RVF3_AES,     `RVOP_AES    },
+            { `RVF5_ANY,         `RVF7_AES32ESI,     `RVF3_AES,     `RVOP_AES    },
+            { `RVF5_ANY,         `RVF7_AES32ESMI,    `RVF3_AES,     `RVOP_AES    },
+            { `RVF5_SHA256SIG0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 },
+            { `RVF5_SHA256SIG1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 },
+            { `RVF5_SHA256SUM0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 },
+            { `RVF5_SHA256SUM1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 },
+            { `RVF5_ANY,         `RVF7_SHA512SIG0H,  `RVF3_SHA512,  `RVOP_SHA512 },
+            { `RVF5_ANY,         `RVF7_SHA512SIG0L,  `RVF3_SHA512,  `RVOP_SHA512 },
+            { `RVF5_ANY,         `RVF7_SHA512SIG1H,  `RVF3_SHA512,  `RVOP_SHA512 },
+            { `RVF5_ANY,         `RVF7_SHA512SIG1L,  `RVF3_SHA512,  `RVOP_SHA512 },
+            { `RVF5_ANY,         `RVF7_SHA512SUM0R,  `RVF3_SHA512,  `RVOP_SHA512 },
+            { `RVF5_ANY,         `RVF7_SHA512SUM1R,  `RVF3_SHA512,  `RVOP_SHA512 }  : res = 1'b1;
+            
+            default:                                                                  res = 0'b0;
+        endcase
+    end
+
+endmodule
+
+
+module crypto_fsm (
+    input             clk,
+    input             crypt_instr,
+    input             rst_n,
+
+    output reg        ctrls_select,
+    output reg        hold,
+    output reg  [1:0] pcSrc1,
+    output reg        pcSrc2,
+    output reg  [2:0] wdSrc,
+    output reg        dmWe
+);
+
+    // parameter [1:0] S0 = 0, S1 = 1, S2 = 2;
+    localparam S0 = 2'b00;
+    localparam S1 = 2'b01;
+    localparam S2 = 2'b10;
+
+    reg [1:0] state;
+    reg [1:0] next_state;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (~rst_n)
+            state <= S0;  // TODO: momental react, it's ok: solution in output logic
+        else
+            state <= next_state;
+    end
+
+    always @(*) begin
+        ctrls_select = 1'b0;
+        hold = 1'b0;
+        dmWe = 1'b0;
+        wdSrc = 3'b000;
+
+        case (state)
+            S0: begin
+                if (crypt_instr) begin
+                    next_state = S1;    // TODO: complete next state
+                end
+                else
+                    next_state = S0;
+            end
+            default: 
+        endcase
+    end
+
+
+
 endmodule
