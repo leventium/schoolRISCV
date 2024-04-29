@@ -289,12 +289,6 @@ module sr_control
     end
 endmodule
 
-
-// TODO: сделай необходимые define'ы для каждого режима,
-// так будет проще понимать
-// example
-`define CRYPT_MODE_VOID 21'h000000
-
 module crypto_detector (
     input      [ 6:0]  opcode,
     input      [ 2:0]  func3,
@@ -309,24 +303,24 @@ module crypto_detector (
         res = 1'b1;
 
         casez ({ func5_rs2, func7, func3, opcode })
-            { `RVF5_ANY,         `RVF7_AES32DSI,     `RVF3_AES,     `RVOP_AES    }: cryptMode = `CRYPT_MODE_VOID; // example
-            { `RVF5_ANY,         `RVF7_AES32DSMI,    `RVF3_AES,     `RVOP_AES    }: // TODO: и так далее
-            { `RVF5_ANY,         `RVF7_AES32ESI,     `RVF3_AES,     `RVOP_AES    }:
-            { `RVF5_ANY,         `RVF7_AES32ESMI,    `RVF3_AES,     `RVOP_AES    }:
-            { `RVF5_SHA256SIG0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }:
-            { `RVF5_SHA256SIG1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }:
-            { `RVF5_SHA256SUM0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }:
-            { `RVF5_SHA256SUM1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }:
-            { `RVF5_ANY,         `RVF7_SHA512SIG0H,  `RVF3_SHA512,  `RVOP_SHA512 }:
-            { `RVF5_ANY,         `RVF7_SHA512SIG0L,  `RVF3_SHA512,  `RVOP_SHA512 }:
-            { `RVF5_ANY,         `RVF7_SHA512SIG1H,  `RVF3_SHA512,  `RVOP_SHA512 }:
-            { `RVF5_ANY,         `RVF7_SHA512SIG1L,  `RVF3_SHA512,  `RVOP_SHA512 }:
-            { `RVF5_ANY,         `RVF7_SHA512SUM0R,  `RVF3_SHA512,  `RVOP_SHA512 }:
-            { `RVF5_ANY,         `RVF7_SHA512SUM1R,  `RVF3_SHA512,  `RVOP_SHA512 }:
+            { `RVF5_ANY,         `RVF7_AES32DSI,     `RVF3_AES,     `RVOP_AES    }: cryptMode = `MODE_SAES32_DECS;
+            { `RVF5_ANY,         `RVF7_AES32DSMI,    `RVF3_AES,     `RVOP_AES    }: cryptMode = `MODE_SAES32_DECSM;
+            { `RVF5_ANY,         `RVF7_AES32ESI,     `RVF3_AES,     `RVOP_AES    }: cryptMode = `MODE_SAES32_ENCS;
+            { `RVF5_ANY,         `RVF7_AES32ESMI,    `RVF3_AES,     `RVOP_AES    }: cryptMode = `MODE_SAES32_ENCSM;
+            { `RVF5_SHA256SIG0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }: cryptMode = `MODE_SSHA256_SIG0;
+            { `RVF5_SHA256SIG1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }: cryptMode = `MODE_SSHA256_SIG1;
+            { `RVF5_SHA256SUM0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }: cryptMode = `MODE_SSHA256_SUM0;
+            { `RVF5_SHA256SUM1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }: cryptMode = `MODE_SSHA256_SUM1;
+            { `RVF5_ANY,         `RVF7_SHA512SIG0H,  `RVF3_SHA512,  `RVOP_SHA512 }: cryptMode = `MODE_SSHA512_SIG0H;
+            { `RVF5_ANY,         `RVF7_SHA512SIG0L,  `RVF3_SHA512,  `RVOP_SHA512 }: cryptMode = `MODE_SSHA512_SIG0L;
+            { `RVF5_ANY,         `RVF7_SHA512SIG1H,  `RVF3_SHA512,  `RVOP_SHA512 }: cryptMode = `MODE_SSHA512_SIG1H;
+            { `RVF5_ANY,         `RVF7_SHA512SIG1L,  `RVF3_SHA512,  `RVOP_SHA512 }: cryptMode = `MODE_SSHA512_SIG1L;
+            { `RVF5_ANY,         `RVF7_SHA512SUM0R,  `RVF3_SHA512,  `RVOP_SHA512 }: cryptMode = `MODE_SSHA512_SUM0R;
+            { `RVF5_ANY,         `RVF7_SHA512SUM1R,  `RVF3_SHA512,  `RVOP_SHA512 }: cryptMode = `MODE_SSHA512_SUM1R;
 
             default: begin
                 res = 1'b0;
-                cryptMode = 21'b000000;
+                cryptMode = 21'h000000;
             end
         endcase
     end
