@@ -21,6 +21,7 @@
 `define ALU_LT      4'b1001
 
 // instruction opcode
+// TODO: squash into unite opcodes
 `define RVOP_ADDI   7'b0010011
 `define RVOP_BNCH   7'b1100011
 `define RVOP_LUI    7'b0110111
@@ -161,6 +162,7 @@
 `define ALU_SRC2_IMMU   2'b11
 
 // Crypto mode
+// TODO: move defines to localparams
 `define MODE_SAES32_ENCS    21'h000008
 `define MODE_SAES32_ENCSM   21'h000010
 `define MODE_SAES32_DECS    21'h000020

@@ -83,7 +83,7 @@ module sr_cpu
         endcase
     end
 
-    sm_register r_pc(clk, rst_n, pcNext, pc);
+    sm_register r_pc(clk, rst_n, pcNext, pc); //TODO: add hold
 
 
     //program memory access
@@ -125,7 +125,7 @@ module sr_cpu
         endcase
     end
 
-    sm_register_file rf (
+    sm_register_file rf (             // TODO: add hold
         .clk        ( clk          ),
         .a0         ( regAddr      ),
         .a1         ( rs1          ),
@@ -187,7 +187,7 @@ module sr_cpu
         .rs2               ( rd2          ),
         .imm               ( instr[31:30] ), // TODO: modify decoder
 
-        .op_lut4lo         ( cry_mode[ 0] ),
+        .op_lut4lo         ( cry_mode[ 0] ), // TODO: remove unused modes
         .op_lut4hi         ( cry_mode[ 1] ),
         .op_lut4           ( cry_mode[ 2] ),
         .op_saes32_encs    ( cry_mode[ 3] ),
