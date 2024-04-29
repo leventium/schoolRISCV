@@ -4,6 +4,9 @@
 `define DM_HALF     3'b010
 `define DM_WORD     3'b100
 
+`define SELECT_COMB 1'b0;
+`define SELECT_CRYP 1'b1;
+
 
 module sr_control
 (
@@ -287,33 +290,44 @@ module sr_control
 endmodule
 
 
-module crypto_detector (
-    input [6:0] opcode,
-    input [2:0] func3,
-    input [6:0] func7,
-    input [4:0] func5_rs2,
+// TODO: сделай необходимые define'ы для каждого режима,
+// так будет проще понимать
+// example
+`define CRYPT_MODE_VOID 21'h000000
 
-    output reg  res
+module crypto_detector (
+    input      [ 6:0]  opcode,
+    input      [ 2:0]  func3,
+    input      [ 6:0]  func7,
+    input      [ 4:0]  func5_rs2,
+
+    output reg         res,
+    output reg [20:0]  cryptMode
 );
 
     always @* begin
+        res = 1'b1;
+
         casez ({ func5_rs2, func7, func3, opcode })
-            { `RVF5_ANY,         `RVF7_AES32DSI,     `RVF3_AES,     `RVOP_AES    },
-            { `RVF5_ANY,         `RVF7_AES32DSMI,    `RVF3_AES,     `RVOP_AES    },
-            { `RVF5_ANY,         `RVF7_AES32ESI,     `RVF3_AES,     `RVOP_AES    },
-            { `RVF5_ANY,         `RVF7_AES32ESMI,    `RVF3_AES,     `RVOP_AES    },
-            { `RVF5_SHA256SIG0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 },
-            { `RVF5_SHA256SIG1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 },
-            { `RVF5_SHA256SUM0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 },
-            { `RVF5_SHA256SUM1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 },
-            { `RVF5_ANY,         `RVF7_SHA512SIG0H,  `RVF3_SHA512,  `RVOP_SHA512 },
-            { `RVF5_ANY,         `RVF7_SHA512SIG0L,  `RVF3_SHA512,  `RVOP_SHA512 },
-            { `RVF5_ANY,         `RVF7_SHA512SIG1H,  `RVF3_SHA512,  `RVOP_SHA512 },
-            { `RVF5_ANY,         `RVF7_SHA512SIG1L,  `RVF3_SHA512,  `RVOP_SHA512 },
-            { `RVF5_ANY,         `RVF7_SHA512SUM0R,  `RVF3_SHA512,  `RVOP_SHA512 },
-            { `RVF5_ANY,         `RVF7_SHA512SUM1R,  `RVF3_SHA512,  `RVOP_SHA512 }  : res = 1'b1;
-            
-            default:                                                                  res = 0'b0;
+            { `RVF5_ANY,         `RVF7_AES32DSI,     `RVF3_AES,     `RVOP_AES    }: cryptMode = `CRYPT_MODE_VOID; // example
+            { `RVF5_ANY,         `RVF7_AES32DSMI,    `RVF3_AES,     `RVOP_AES    }: // TODO: и так далее
+            { `RVF5_ANY,         `RVF7_AES32ESI,     `RVF3_AES,     `RVOP_AES    }:
+            { `RVF5_ANY,         `RVF7_AES32ESMI,    `RVF3_AES,     `RVOP_AES    }:
+            { `RVF5_SHA256SIG0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }:
+            { `RVF5_SHA256SIG1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }:
+            { `RVF5_SHA256SUM0,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }:
+            { `RVF5_SHA256SUM1,  `RVF7_SHA256,       `RVF3_SHA256,  `RVOP_SHA256 }:
+            { `RVF5_ANY,         `RVF7_SHA512SIG0H,  `RVF3_SHA512,  `RVOP_SHA512 }:
+            { `RVF5_ANY,         `RVF7_SHA512SIG0L,  `RVF3_SHA512,  `RVOP_SHA512 }:
+            { `RVF5_ANY,         `RVF7_SHA512SIG1H,  `RVF3_SHA512,  `RVOP_SHA512 }:
+            { `RVF5_ANY,         `RVF7_SHA512SIG1L,  `RVF3_SHA512,  `RVOP_SHA512 }:
+            { `RVF5_ANY,         `RVF7_SHA512SUM0R,  `RVF3_SHA512,  `RVOP_SHA512 }:
+            { `RVF5_ANY,         `RVF7_SHA512SUM1R,  `RVF3_SHA512,  `RVOP_SHA512 }:
+
+            default: begin
+                res = 1'b0;
+                cryptMode = 21'b000000;
+            end
         endcase
     end
 
@@ -321,19 +335,15 @@ endmodule
 
 
 module crypto_fsm (
-    input             clk,
-    input             crypt_instr,
-    input             rst_n,
+    input       clk,
+    input       rst_n,
+    input       crypt_instr,
 
-    output reg        ctrls_select,
-    output reg        hold,
-    output reg  [1:0] pcSrc1,
-    output reg        pcSrc2,
-    output reg  [2:0] wdSrc,
-    output reg        dmWe
+    output reg  ctrls_select,
+    output reg  hold,
+    output reg  regWrite
 );
 
-    // parameter [1:0] S0 = 0, S1 = 1, S2 = 2;
     localparam S0 = 2'b00;
     localparam S1 = 2'b01;
     localparam S2 = 2'b10;
@@ -343,29 +353,40 @@ module crypto_fsm (
 
     always @(posedge clk or negedge rst_n) begin
         if (~rst_n)
-            state <= S0;  // TODO: momental react, it's ok: solution in output logic
+            state <= S0;
         else
             state <= next_state;
     end
 
     always @(*) begin
-        ctrls_select = 1'b0;
-        hold = 1'b0;
-        dmWe = 1'b0;
-        wdSrc = 3'b000;
-
         case (state)
-            S0: begin
-                if (crypt_instr) begin
-                    next_state = S1;    // TODO: complete next state
-                end
-                else
-                    next_state = S0;
-            end
-            default: 
+            S0: next_state = crypt_instr ? S1 : S0;
+            S1: next_state = S2;
+            S2: next_state = S0;
+
+            default: next_state = S0;
         endcase
     end
 
+    always @(*) begin
+        case (next_state)
+            S1: begin
+                hold = 1'b1;
+                ctrls_select = `SELECT_CRYP;
+                regWrite = 1'b0;
+            end
+            S2: begin
+                hold = 1'b0;
+                ctrls_select = `SELECT_CRYP;
+                regWrite = 1'b1;
+            end
 
+            default: begin
+                hold = 1'b0;
+                ctrls_select = `SELECT_COMB;
+                regWrite = 1'b0;
+            end
+        endcase
+    end
 
 endmodule
