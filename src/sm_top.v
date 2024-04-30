@@ -49,7 +49,7 @@ module sm_top
     wire        op_half;
     wire        op_word;
 
-    sr_ram ram (                  // TODO: add hold
+    sr_ram ram (
         .clk         ( clk        ),
         .data_addr   ( data_addr  ),
         .write_data  ( write_data ),

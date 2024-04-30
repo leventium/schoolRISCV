@@ -31,17 +31,8 @@ module sr_cpu
 );
     //control wires
     wire        aluZero;
-    // wire        pcSrc;
     wire        regWrite;
     wire        aluSrc;
-    // wire        wdSrc;
-    // wire        immPick;
-    // wire        memToReg;
-    // wire        src1Pick;
-    // wire  [1:0] src2Pick;
-    // wire  [1:0] wd3Pick;
-    // wire  [1:0] pcOp1;
-    // wire        pcOp2;
     wire [ 1:0] pcSrc1;
     wire        pcSrc2;
     wire        aluSrc1;
@@ -72,6 +63,8 @@ module sr_cpu
     reg  [31:0] pcSrc1In;
     wire [31:0] pcSrc2In    = pcSrc2 ? rd1 : pc;
     wire [31:0] pcNext      = pcSrc1In + pcSrc2In;
+    wire        pc_hold;
+    wire        pc_we = ~pc_hold;
 
     always @(*) begin
         case ( pcSrc1 )
@@ -83,7 +76,7 @@ module sr_cpu
         endcase
     end
 
-    sm_register r_pc(clk, rst_n, pcNext, pc); //TODO: add hold
+    sm_register_we r_pc(clk, rst_n, pc_we, pcNext, pc);
 
 
     //program memory access
@@ -125,7 +118,7 @@ module sr_cpu
         endcase
     end
 
-    sm_register_file rf (             // TODO: add hold
+    sm_register_file rf (
         .clk        ( clk          ),
         .a0         ( regAddr      ),
         .a1         ( rs1          ),
@@ -144,9 +137,6 @@ module sr_cpu
 
 
     // ALU
-    // wire [31:0] immediate = immPick ? immS : immI;  // TODO src2 Pick
-    // wire [31:0] srcB = aluSrc ? immediate : rd2;
-    // wire [31:0] execResult;
     wire [31:0] aluSrc1In = aluSrc1 ? pc : rd1;
     reg  [31:0] aluSrc2In;
     wire [31:0] aluResult;
@@ -169,63 +159,58 @@ module sr_cpu
         .result     ( aluResult    ) 
     );
 
-    // assign execResult = memToReg ? dmDataR : aluResult; // TODO wd Pick
-    // assign wd3 = wdSrc ? immU : execResult;
-
 
     // crypto
-
-    // wire cry_i_valid;
-    wire [20:0] cry_mode;
+    wire [20:0] cryptMode;
 
     riscv_crypto_fu_rv32 crypto_module (
-        .g_clk             ( clk          ),
-        .g_resetn          ( rst_n        ),
+        .g_clk             ( clk           ),
+        .g_resetn          ( rst_n         ),
 
-        .valid             ( 1'b1         ),
-        .rs1               ( rd1          ),
-        .rs2               ( rd2          ),
-        .imm               ( instr[31:30] ), // TODO: modify decoder
+        .valid             ( 1'b1          ),
+        .rs1               ( rd1           ),
+        .rs2               ( rd2           ),
+        .imm               ( instr[31:30]  ), // TODO: modify decoder
 
-        .op_lut4lo         ( cry_mode[ 0] ), // TODO: remove unused modes
-        .op_lut4hi         ( cry_mode[ 1] ),
-        .op_lut4           ( cry_mode[ 2] ),
-        .op_saes32_encs    ( cry_mode[ 3] ),
-        .op_saes32_encsm   ( cry_mode[ 4] ),
-        .op_saes32_decs    ( cry_mode[ 5] ),
-        .op_saes32_decsm   ( cry_mode[ 6] ),
-        .op_ssha256_sig0   ( cry_mode[ 7] ),
-        .op_ssha256_sig1   ( cry_mode[ 8] ),
-        .op_ssha256_sum0   ( cry_mode[ 9] ),
-        .op_ssha256_sum1   ( cry_mode[10] ),
-        .op_ssha512_sum0r  ( cry_mode[11] ),
-        .op_ssha512_sum1r  ( cry_mode[12] ),
-        .op_ssha512_sig0l  ( cry_mode[13] ),
-        .op_ssha512_sig0h  ( cry_mode[14] ),
-        .op_ssha512_sig1l  ( cry_mode[15] ),
-        .op_ssha512_sig1h  ( cry_mode[16] ),
-        .op_ssm3_p0        ( cry_mode[17] ),
-        .op_ssm3_p1        ( cry_mode[18] ),
-        .op_ssm4_ks        ( cry_mode[19] ),
-        .op_ssm4_ed        ( cry_mode[20] ),
+        .op_lut4lo         ( cryptMode[ 0] ), // TODO: remove unused modes
+        .op_lut4hi         ( cryptMode[ 1] ),
+        .op_lut4           ( cryptMode[ 2] ),
+        .op_saes32_encs    ( cryptMode[ 3] ),
+        .op_saes32_encsm   ( cryptMode[ 4] ),
+        .op_saes32_decs    ( cryptMode[ 5] ),
+        .op_saes32_decsm   ( cryptMode[ 6] ),
+        .op_ssha256_sig0   ( cryptMode[ 7] ),
+        .op_ssha256_sig1   ( cryptMode[ 8] ),
+        .op_ssha256_sum0   ( cryptMode[ 9] ),
+        .op_ssha256_sum1   ( cryptMode[10] ),
+        .op_ssha512_sum0r  ( cryptMode[11] ),
+        .op_ssha512_sum1r  ( cryptMode[12] ),
+        .op_ssha512_sig0l  ( cryptMode[13] ),
+        .op_ssha512_sig0h  ( cryptMode[14] ),
+        .op_ssha512_sig1l  ( cryptMode[15] ),
+        .op_ssha512_sig1h  ( cryptMode[16] ),
+        .op_ssm3_p0        ( cryptMode[17] ),
+        .op_ssm3_p1        ( cryptMode[18] ),
+        .op_ssm4_ks        ( cryptMode[19] ),
+        .op_ssm4_ed        ( cryptMode[20] ),
 
-        .rd                ( cryResult    )
+        .rd                ( cryResult     )
     );
 
 
     // control unit
     sr_control sr_control (
+        .clk        ( clk        ),
+        .rst_n      ( rst_n      ),
+
         .cmdOp      ( cmdOp      ),
         .cmdF3      ( cmdF3      ),
         .cmdF7      ( cmdF7      ),
-
+        .cmdF5_rs2  ( rs2        ),
         .aluZero    ( aluZero    ),
+
         .regWrite   ( regWrite   ),
-    
-        // .pcSrc      ( pcSrc      ),
-        // .aluSrc     ( aluSrc     ),
-        // .immPick    ( immPick    ),
-        // .memToReg   ( memToReg   ),
+        .hold       ( pc_hold    ),
 
         .aluControl ( aluControl ),
         .aluSrc1    ( aluSrc1    ),
@@ -240,8 +225,7 @@ module sr_cpu
         .dmOpHalf   ( op_half    ),
         .dmOpWord   ( op_word    ),
 
-        .cryptoMode ( cry_mode   )
-        // .cry_i_valid( cry_i_valid)
+        .cryptMode ( cryptMode   )
     );
 
 

@@ -81,9 +81,11 @@ IVARG = -g2005
 IVARG += -D ICARUS
 IVARG += -I ../
 IVARG += -I ../../../src
+IVARG += -I ../../../src/crypto
 IVARG += -I ../../../testbench
 IVARG += -s $(TOPMODULE)
 IVARG += ../../../src/*.v
+IVARG += ../../../src/crypto/riscv_*.v
 IVARG += ../../../testbench/*.v
 
 # make icarus - run compilation using Icarus Verilog simulator
