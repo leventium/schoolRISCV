@@ -20,8 +20,7 @@ loop:
    j loop
   
 ror:
-   addi t0, zero, 31
-   and t0, t0, a7      # shamt = X(rs2)[4..0]
+   andi t0, a7, 31      # shamt = X(rs2)[4..0]
    srl t2, a1, t0      # (X(rs1) >> shamt)
    
    addi t1, zero, 32   # xlen
