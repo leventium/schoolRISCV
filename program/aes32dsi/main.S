@@ -524,20 +524,15 @@ andi a4, a4, 255    # si = (X(rs2)[31..0] >> shamt)[7..0]
 
 lb a5, (a4)         # so = 0x000000 @ aes_sbox_inv(si) in a5
 
-jal rol             # rol32(so, unsigned(shamt)) in a0
+# rol32(so, unsigned(shamt))
+andi t0, a3, 31      # shamt = X(rs2)[4..0]
+sll t2, a5, t0      # (X(rs1) << shamt)
+addi t1, zero, 32   # xlen
+sub t1, t1, t0      # (xlen - shamt)
+srl t1, a5, t1      # (X(rs1) >> (xlen - shamt))
+or a0, t2, t1
 
 xor a0, a1, a0      # result = X(rs1)[31..0] ^ rol32(so, unsigned(shamt))
 
 loop:
    j loop
-   
-rol:
-   andi t0, a3, 31      # shamt = X(rs2)[4..0]
-   sll t2, a5, t0      # (X(rs1) << shamt)
-   
-   addi t1, zero, 32   # xlen
-   sub t1, t1, t0      # (xlen - shamt)
-   srl t1, a5, t1      # (X(rs1) >> (xlen - shamt))
-   
-   or a0, t2, t1
-   jr ra
