@@ -2,7 +2,7 @@
 addi a1, zero, 8    # rs1
 addi a2, zero, 5    # rs2
 
-slli a3, a1, 1      # (X(rs1) << 3)
+slli a3, a1, 3      # (X(rs1) << 3)
 srli a4, a1, 6      # (X(rs1) >> 6)
 srli a5, a1, 19      # (X(rs1) >> 19)
 
