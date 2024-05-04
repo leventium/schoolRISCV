@@ -1,5 +1,5 @@
 module sr_ram #(
-    parameter DEPTH = 256
+    parameter DEPTH = 512
 ) (
     input             clk,
     input      [31:0] data_addr,
@@ -28,7 +28,7 @@ module sr_ram #(
                     mem[data_addr+2] = write_data[23:16];
                     mem[data_addr+3] = write_data[31:24];
                 end
-                default: read_data = 32'b0;
+                default: mem[data_addr] = write_data[7:0];
             endcase
         end
     end

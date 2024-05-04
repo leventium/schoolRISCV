@@ -49,7 +49,9 @@ module sm_top
     wire        op_half;
     wire        op_word;
 
-    sr_ram ram (
+    sr_ram #(
+        .DEPTH       ( 1024       )
+    ) ram (
         .clk         ( clk        ),
         .data_addr   ( data_addr  ),
         .write_data  ( write_data ),
@@ -64,7 +66,7 @@ module sm_top
     //instruction memory
     wire    [31:0]  imAddr;
     wire    [31:0]  imData;
-    sm_rom reset_rom(imAddr, imData);
+    sm_rom #(.SIZE (1024)) reset_rom (imAddr, imData);
 
     sr_cpu sm_cpu (
         .clk        ( clk        ),
