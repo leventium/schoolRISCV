@@ -1,517 +1,517 @@
 .text
-# sbox_inv table
+sbox_inv_gen:
 	li t0, 0x52
-	sb t0, 256
+	sb t0, 0
 	li t0, 0x9
-	sb t0, 257
+	sb t0, 1
 	li t0, 0x6a
-	sb t0, 258
+	sb t0, 2
 	li t0, 0xd5
-	sb t0, 259
+	sb t0, 3
 	li t0, 0x30
-	sb t0, 260
+	sb t0, 4
 	li t0, 0x36
-	sb t0, 261
+	sb t0, 5
 	li t0, 0xa5
-	sb t0, 262
+	sb t0, 6
 	li t0, 0x38
-	sb t0, 263
+	sb t0, 7
 	li t0, 0xbf
-	sb t0, 264
+	sb t0, 8
 	li t0, 0x40
-	sb t0, 265
+	sb t0, 9
 	li t0, 0xa3
-	sb t0, 266
+	sb t0, 10
 	li t0, 0x9e
-	sb t0, 267
+	sb t0, 11
 	li t0, 0x81
-	sb t0, 268
+	sb t0, 12
 	li t0, 0xf3
-	sb t0, 269
+	sb t0, 13
 	li t0, 0xd7
-	sb t0, 270
+	sb t0, 14
 	li t0, 0xfb
-	sb t0, 271
+	sb t0, 15
 	li t0, 0x7c
-	sb t0, 272
+	sb t0, 16
 	li t0, 0xe3
-	sb t0, 273
+	sb t0, 17
 	li t0, 0x39
-	sb t0, 274
+	sb t0, 18
 	li t0, 0x82
-	sb t0, 275
+	sb t0, 19
 	li t0, 0x9b
-	sb t0, 276
+	sb t0, 20
 	li t0, 0x2f
-	sb t0, 277
+	sb t0, 21
 	li t0, 0xff
-	sb t0, 278
+	sb t0, 22
 	li t0, 0x87
-	sb t0, 279
+	sb t0, 23
 	li t0, 0x34
-	sb t0, 280
+	sb t0, 24
 	li t0, 0x8e
-	sb t0, 281
+	sb t0, 25
 	li t0, 0x43
-	sb t0, 282
+	sb t0, 26
 	li t0, 0x44
-	sb t0, 283
+	sb t0, 27
 	li t0, 0xc4
-	sb t0, 284
+	sb t0, 28
 	li t0, 0xde
-	sb t0, 285
+	sb t0, 29
 	li t0, 0xe9
-	sb t0, 286
+	sb t0, 30
 	li t0, 0xcb
-	sb t0, 287
+	sb t0, 31
 	li t0, 0x54
-	sb t0, 288
+	sb t0, 32
 	li t0, 0x7b
-	sb t0, 289
+	sb t0, 33
 	li t0, 0x94
-	sb t0, 290
+	sb t0, 34
 	li t0, 0x32
-	sb t0, 291
+	sb t0, 35
 	li t0, 0xa6
-	sb t0, 292
+	sb t0, 36
 	li t0, 0xc2
-	sb t0, 293
+	sb t0, 37
 	li t0, 0x23
-	sb t0, 294
+	sb t0, 38
 	li t0, 0x3d
-	sb t0, 295
+	sb t0, 39
 	li t0, 0xee
-	sb t0, 296
+	sb t0, 40
 	li t0, 0x4c
-	sb t0, 297
+	sb t0, 41
 	li t0, 0x95
-	sb t0, 298
+	sb t0, 42
 	li t0, 0xb
-	sb t0, 299
+	sb t0, 43
 	li t0, 0x42
-	sb t0, 300
+	sb t0, 44
 	li t0, 0xfa
-	sb t0, 301
+	sb t0, 45
 	li t0, 0xc3
-	sb t0, 302
+	sb t0, 46
 	li t0, 0x4e
-	sb t0, 303
+	sb t0, 47
 	li t0, 0x8
-	sb t0, 304
+	sb t0, 48
 	li t0, 0x2e
-	sb t0, 305
+	sb t0, 49
 	li t0, 0xa1
-	sb t0, 306
+	sb t0, 50
 	li t0, 0x66
-	sb t0, 307
+	sb t0, 51
 	li t0, 0x28
-	sb t0, 308
+	sb t0, 52
 	li t0, 0xd9
-	sb t0, 309
+	sb t0, 53
 	li t0, 0x24
-	sb t0, 310
+	sb t0, 54
 	li t0, 0xb2
-	sb t0, 311
+	sb t0, 55
 	li t0, 0x76
-	sb t0, 312
+	sb t0, 56
 	li t0, 0x5b
-	sb t0, 313
+	sb t0, 57
 	li t0, 0xa2
-	sb t0, 314
+	sb t0, 58
 	li t0, 0x49
-	sb t0, 315
+	sb t0, 59
 	li t0, 0x6d
-	sb t0, 316
+	sb t0, 60
 	li t0, 0x8b
-	sb t0, 317
+	sb t0, 61
 	li t0, 0xd1
-	sb t0, 318
+	sb t0, 62
 	li t0, 0x25
-	sb t0, 319
+	sb t0, 63
 	li t0, 0x72
-	sb t0, 320
+	sb t0, 64
 	li t0, 0xf8
-	sb t0, 321
+	sb t0, 65
 	li t0, 0xf6
-	sb t0, 322
+	sb t0, 66
 	li t0, 0x64
-	sb t0, 323
+	sb t0, 67
 	li t0, 0x86
-	sb t0, 324
+	sb t0, 68
 	li t0, 0x68
-	sb t0, 325
+	sb t0, 69
 	li t0, 0x98
-	sb t0, 326
+	sb t0, 70
 	li t0, 0x16
-	sb t0, 327
+	sb t0, 71
 	li t0, 0xd4
-	sb t0, 328
+	sb t0, 72
 	li t0, 0xa4
-	sb t0, 329
+	sb t0, 73
 	li t0, 0x5c
-	sb t0, 330
+	sb t0, 74
 	li t0, 0xcc
-	sb t0, 331
+	sb t0, 75
 	li t0, 0x5d
-	sb t0, 332
+	sb t0, 76
 	li t0, 0x65
-	sb t0, 333
+	sb t0, 77
 	li t0, 0xb6
-	sb t0, 334
+	sb t0, 78
 	li t0, 0x92
-	sb t0, 335
+	sb t0, 79
 	li t0, 0x6c
-	sb t0, 336
+	sb t0, 80
 	li t0, 0x70
-	sb t0, 337
+	sb t0, 81
 	li t0, 0x48
-	sb t0, 338
+	sb t0, 82
 	li t0, 0x50
-	sb t0, 339
+	sb t0, 83
 	li t0, 0xfd
-	sb t0, 340
+	sb t0, 84
 	li t0, 0xed
-	sb t0, 341
+	sb t0, 85
 	li t0, 0xb9
-	sb t0, 342
+	sb t0, 86
 	li t0, 0xda
-	sb t0, 343
+	sb t0, 87
 	li t0, 0x5e
-	sb t0, 344
+	sb t0, 88
 	li t0, 0x15
-	sb t0, 345
+	sb t0, 89
 	li t0, 0x46
-	sb t0, 346
+	sb t0, 90
 	li t0, 0x57
-	sb t0, 347
+	sb t0, 91
 	li t0, 0xa7
-	sb t0, 348
+	sb t0, 92
 	li t0, 0x8d
-	sb t0, 349
+	sb t0, 93
 	li t0, 0x9d
-	sb t0, 350
+	sb t0, 94
 	li t0, 0x84
-	sb t0, 351
+	sb t0, 95
 	li t0, 0x90
-	sb t0, 352
+	sb t0, 96
 	li t0, 0xd8
-	sb t0, 353
+	sb t0, 97
 	li t0, 0xab
-	sb t0, 354
+	sb t0, 98
 	li t0, 0x0
-	sb t0, 355
+	sb t0, 99
 	li t0, 0x8c
-	sb t0, 356
+	sb t0, 100
 	li t0, 0xbc
-	sb t0, 357
+	sb t0, 101
 	li t0, 0xd3
-	sb t0, 358
+	sb t0, 102
 	li t0, 0xa
-	sb t0, 359
+	sb t0, 103
 	li t0, 0xf7
-	sb t0, 360
+	sb t0, 104
 	li t0, 0xe4
-	sb t0, 361
+	sb t0, 105
 	li t0, 0x58
-	sb t0, 362
+	sb t0, 106
 	li t0, 0x5
-	sb t0, 363
+	sb t0, 107
 	li t0, 0xb8
-	sb t0, 364
+	sb t0, 108
 	li t0, 0xb3
-	sb t0, 365
+	sb t0, 109
 	li t0, 0x45
-	sb t0, 366
+	sb t0, 110
 	li t0, 0x6
-	sb t0, 367
+	sb t0, 111
 	li t0, 0xd0
-	sb t0, 368
+	sb t0, 112
 	li t0, 0x2c
-	sb t0, 369
+	sb t0, 113
 	li t0, 0x1e
-	sb t0, 370
+	sb t0, 114
 	li t0, 0x8f
-	sb t0, 371
+	sb t0, 115
 	li t0, 0xca
-	sb t0, 372
+	sb t0, 116
 	li t0, 0x3f
-	sb t0, 373
+	sb t0, 117
 	li t0, 0xf
-	sb t0, 374
+	sb t0, 118
 	li t0, 0x2
-	sb t0, 375
+	sb t0, 119
 	li t0, 0xc1
-	sb t0, 376
+	sb t0, 120
 	li t0, 0xaf
-	sb t0, 377
+	sb t0, 121
 	li t0, 0xbd
-	sb t0, 378
+	sb t0, 122
 	li t0, 0x3
-	sb t0, 379
+	sb t0, 123
 	li t0, 0x1
-	sb t0, 380
+	sb t0, 124
 	li t0, 0x13
-	sb t0, 381
+	sb t0, 125
 	li t0, 0x8a
-	sb t0, 382
+	sb t0, 126
 	li t0, 0x6b
-	sb t0, 383
+	sb t0, 127
 	li t0, 0x3a
-	sb t0, 384
+	sb t0, 128
 	li t0, 0x91
-	sb t0, 385
+	sb t0, 129
 	li t0, 0x11
-	sb t0, 386
+	sb t0, 130
 	li t0, 0x41
-	sb t0, 387
+	sb t0, 131
 	li t0, 0x4f
-	sb t0, 388
+	sb t0, 132
 	li t0, 0x67
-	sb t0, 389
+	sb t0, 133
 	li t0, 0xdc
-	sb t0, 390
+	sb t0, 134
 	li t0, 0xea
-	sb t0, 391
+	sb t0, 135
 	li t0, 0x97
-	sb t0, 392
+	sb t0, 136
 	li t0, 0xf2
-	sb t0, 393
+	sb t0, 137
 	li t0, 0xcf
-	sb t0, 394
+	sb t0, 138
 	li t0, 0xce
-	sb t0, 395
+	sb t0, 139
 	li t0, 0xf0
-	sb t0, 396
+	sb t0, 140
 	li t0, 0xb4
-	sb t0, 397
+	sb t0, 141
 	li t0, 0xe6
-	sb t0, 398
+	sb t0, 142
 	li t0, 0x73
-	sb t0, 399
+	sb t0, 143
 	li t0, 0x96
-	sb t0, 400
+	sb t0, 144
 	li t0, 0xac
-	sb t0, 401
+	sb t0, 145
 	li t0, 0x74
-	sb t0, 402
+	sb t0, 146
 	li t0, 0x22
-	sb t0, 403
+	sb t0, 147
 	li t0, 0xe7
-	sb t0, 404
+	sb t0, 148
 	li t0, 0xad
-	sb t0, 405
+	sb t0, 149
 	li t0, 0x35
-	sb t0, 406
+	sb t0, 150
 	li t0, 0x85
-	sb t0, 407
+	sb t0, 151
 	li t0, 0xe2
-	sb t0, 408
+	sb t0, 152
 	li t0, 0xf9
-	sb t0, 409
+	sb t0, 153
 	li t0, 0x37
-	sb t0, 410
+	sb t0, 154
 	li t0, 0xe8
-	sb t0, 411
+	sb t0, 155
 	li t0, 0x1c
-	sb t0, 412
+	sb t0, 156
 	li t0, 0x75
-	sb t0, 413
+	sb t0, 157
 	li t0, 0xdf
-	sb t0, 414
+	sb t0, 158
 	li t0, 0x6e
-	sb t0, 415
+	sb t0, 159
 	li t0, 0x47
-	sb t0, 416
+	sb t0, 160
 	li t0, 0xf1
-	sb t0, 417
+	sb t0, 161
 	li t0, 0x1a
-	sb t0, 418
+	sb t0, 162
 	li t0, 0x71
-	sb t0, 419
+	sb t0, 163
 	li t0, 0x1d
-	sb t0, 420
+	sb t0, 164
 	li t0, 0x29
-	sb t0, 421
+	sb t0, 165
 	li t0, 0xc5
-	sb t0, 422
+	sb t0, 166
 	li t0, 0x89
-	sb t0, 423
+	sb t0, 167
 	li t0, 0x6f
-	sb t0, 424
+	sb t0, 168
 	li t0, 0xb7
-	sb t0, 425
+	sb t0, 169
 	li t0, 0x62
-	sb t0, 426
+	sb t0, 170
 	li t0, 0xe
-	sb t0, 427
+	sb t0, 171
 	li t0, 0xaa
-	sb t0, 428
+	sb t0, 172
 	li t0, 0x18
-	sb t0, 429
+	sb t0, 173
 	li t0, 0xbe
-	sb t0, 430
+	sb t0, 174
 	li t0, 0x1b
-	sb t0, 431
+	sb t0, 175
 	li t0, 0xfc
-	sb t0, 432
+	sb t0, 176
 	li t0, 0x56
-	sb t0, 433
+	sb t0, 177
 	li t0, 0x3e
-	sb t0, 434
+	sb t0, 178
 	li t0, 0x4b
-	sb t0, 435
+	sb t0, 179
 	li t0, 0xc6
-	sb t0, 436
+	sb t0, 180
 	li t0, 0xd2
-	sb t0, 437
+	sb t0, 181
 	li t0, 0x79
-	sb t0, 438
+	sb t0, 182
 	li t0, 0x20
-	sb t0, 439
+	sb t0, 183
 	li t0, 0x9a
-	sb t0, 440
+	sb t0, 184
 	li t0, 0xdb
-	sb t0, 441
+	sb t0, 185
 	li t0, 0xc0
-	sb t0, 442
+	sb t0, 186
 	li t0, 0xfe
-	sb t0, 443
+	sb t0, 187
 	li t0, 0x78
-	sb t0, 444
+	sb t0, 188
 	li t0, 0xcd
-	sb t0, 445
+	sb t0, 189
 	li t0, 0x5a
-	sb t0, 446
+	sb t0, 190
 	li t0, 0xf4
-	sb t0, 447
+	sb t0, 191
 	li t0, 0x1f
-	sb t0, 448
+	sb t0, 192
 	li t0, 0xdd
-	sb t0, 449
+	sb t0, 193
 	li t0, 0xa8
-	sb t0, 450
+	sb t0, 194
 	li t0, 0x33
-	sb t0, 451
+	sb t0, 195
 	li t0, 0x88
-	sb t0, 452
+	sb t0, 196
 	li t0, 0x7
-	sb t0, 453
+	sb t0, 197
 	li t0, 0xc7
-	sb t0, 454
+	sb t0, 198
 	li t0, 0x31
-	sb t0, 455
+	sb t0, 199
 	li t0, 0xb1
-	sb t0, 456
+	sb t0, 200
 	li t0, 0x12
-	sb t0, 457
+	sb t0, 201
 	li t0, 0x10
-	sb t0, 458
+	sb t0, 202
 	li t0, 0x59
-	sb t0, 459
+	sb t0, 203
 	li t0, 0x27
-	sb t0, 460
+	sb t0, 204
 	li t0, 0x80
-	sb t0, 461
+	sb t0, 205
 	li t0, 0xec
-	sb t0, 462
+	sb t0, 206
 	li t0, 0x5f
-	sb t0, 463
+	sb t0, 207
 	li t0, 0x60
-	sb t0, 464
+	sb t0, 208
 	li t0, 0x51
-	sb t0, 465
+	sb t0, 209
 	li t0, 0x7f
-	sb t0, 466
+	sb t0, 210
 	li t0, 0xa9
-	sb t0, 467
+	sb t0, 211
 	li t0, 0x19
-	sb t0, 468
+	sb t0, 212
 	li t0, 0xb5
-	sb t0, 469
+	sb t0, 213
 	li t0, 0x4a
-	sb t0, 470
+	sb t0, 214
 	li t0, 0xd
-	sb t0, 471
+	sb t0, 215
 	li t0, 0x2d
-	sb t0, 472
+	sb t0, 216
 	li t0, 0xe5
-	sb t0, 473
+	sb t0, 217
 	li t0, 0x7a
-	sb t0, 474
+	sb t0, 218
 	li t0, 0x9f
-	sb t0, 475
+	sb t0, 219
 	li t0, 0x93
-	sb t0, 476
+	sb t0, 220
 	li t0, 0xc9
-	sb t0, 477
+	sb t0, 221
 	li t0, 0x9c
-	sb t0, 478
+	sb t0, 222
 	li t0, 0xef
-	sb t0, 479
+	sb t0, 223
 	li t0, 0xa0
-	sb t0, 480
+	sb t0, 224
 	li t0, 0xe0
-	sb t0, 481
+	sb t0, 225
 	li t0, 0x3b
-	sb t0, 482
+	sb t0, 226
 	li t0, 0x4d
-	sb t0, 483
+	sb t0, 227
 	li t0, 0xae
-	sb t0, 484
+	sb t0, 228
 	li t0, 0x2a
-	sb t0, 485
+	sb t0, 229
 	li t0, 0xf5
-	sb t0, 486
+	sb t0, 230
 	li t0, 0xb0
-	sb t0, 487
+	sb t0, 231
 	li t0, 0xc8
-	sb t0, 488
+	sb t0, 232
 	li t0, 0xeb
-	sb t0, 489
+	sb t0, 233
 	li t0, 0xbb
-	sb t0, 490
+	sb t0, 234
 	li t0, 0x3c
-	sb t0, 491
+	sb t0, 235
 	li t0, 0x83
-	sb t0, 492
+	sb t0, 236
 	li t0, 0x53
-	sb t0, 493
+	sb t0, 237
 	li t0, 0x99
-	sb t0, 494
+	sb t0, 238
 	li t0, 0x61
-	sb t0, 495
+	sb t0, 239
 	li t0, 0x17
-	sb t0, 496
+	sb t0, 240
 	li t0, 0x2b
-	sb t0, 497
+	sb t0, 241
 	li t0, 0x4
-	sb t0, 498
+	sb t0, 242
 	li t0, 0x7e
-	sb t0, 499
+	sb t0, 243
 	li t0, 0xba
-	sb t0, 500
+	sb t0, 244
 	li t0, 0x77
-	sb t0, 501
+	sb t0, 245
 	li t0, 0xd6
-	sb t0, 502
+	sb t0, 246
 	li t0, 0x26
-	sb t0, 503
+	sb t0, 247
 	li t0, 0xe1
-	sb t0, 504
+	sb t0, 248
 	li t0, 0x69
-	sb t0, 505
+	sb t0, 249
 	li t0, 0x14
-	sb t0, 506
+	sb t0, 250
 	li t0, 0x63
-	sb t0, 507
+	sb t0, 251
 	li t0, 0x55
-	sb t0, 508
+	sb t0, 252
 	li t0, 0x21
-	sb t0, 509
+	sb t0, 253
 	li t0, 0xc
-	sb t0, 510
+	sb t0, 254
 	li t0, 0x7d
-	sb t0, 511
+	sb t0, 255
 
 addi a1, zero, 5    # rs1
 addi a2, zero, 8    # rs2
