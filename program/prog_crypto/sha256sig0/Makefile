@@ -80,13 +80,11 @@ TOPMODULE=sm_testbench
 IVARG = -g2005
 IVARG += -D ICARUS
 IVARG += -I ../
-IVARG += -I ../../../src
-IVARG += -I ../../../src/crypto
-IVARG += -I ../../../testbench
+IVARG += -I ../../../../src
+IVARG += -I ../../../../testbench
 IVARG += -s $(TOPMODULE)
-IVARG += ../../../src/*.v
-IVARG += ../../../src/crypto/riscv_*.v
-IVARG += ../../../testbench/*.v
+IVARG += ../../../../src/*.v
+IVARG += ../../../../testbench/*.v
 
 # make icarus - run compilation using Icarus Verilog simulator
 #    rm -rf sim; mkdir sim; - recreate simulation folder
