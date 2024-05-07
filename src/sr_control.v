@@ -124,11 +124,11 @@ module sr_control
                 aluSrc2 = `ALU_SRC2_IMMI;
                 aluControl = `ALU_AND;
             end
-            { `RVF7_ANY,  `RVF3_SLLI, `RVOP_SLLI  } : begin
-                regWrite = 1'b1;
-                aluSrc2 = `ALU_SRC2_IMMI;
-                aluControl = `ALU_SLL;
-            end
+            // { `RVF7_ANY,  `RVF3_SLLI, `RVOP_SLLI  } : begin
+            //     regWrite = 1'b1;
+            //     aluSrc2 = `ALU_SRC2_IMMI;
+            //     aluControl = `ALU_SLL;
+            // end
             { `RVF7_SLLI, `RVF3_SLLI, `RVOP_SLLI  } : begin
                 regWrite = 1'b1;
                 aluSrc2 = `ALU_SRC2_IMMI;
